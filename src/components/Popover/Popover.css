@@ -1,0 +1,18 @@
+.ds-popover {
+  position: absolute;
+  z-index: var(--dropdown-z);
+  background: var(--dropdown-bg);
+  border: var(--border-width-1) solid var(--dropdown-border);
+  border-radius: var(--dropdown-radius);
+  box-shadow: var(--dropdown-shadow);
+  min-inline-size: var(--dropdown-min-width);
+  max-block-size: var(--dropdown-max-height);
+  overflow: auto;
+  padding: var(--dropdown-padding);
+  animation: ds-popover-in var(--duration-fast) var(--ease-out);
+}
+
+@keyframes ds-popover-in {
+  from { opacity: 0; transform: translateY(-2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

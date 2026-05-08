@@ -1,0 +1,67 @@
+.ds-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--badge-icon-gap);
+  font-family: var(--badge-font-family);
+  font-weight: var(--badge-font-weight);
+  border-radius: var(--badge-radius);
+  border: var(--border-width-1) solid transparent;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.ds-badge--xs { block-size: var(--badge-height-xs); padding-inline: var(--badge-padding-inline-xs); font-size: var(--badge-font-size-xs); }
+.ds-badge--sm { block-size: var(--badge-height-sm); padding-inline: var(--badge-padding-inline-sm); font-size: var(--badge-font-size-sm); }
+.ds-badge--md { block-size: var(--badge-height-md); padding-inline: var(--badge-padding-inline-md); font-size: var(--badge-font-size-md); }
+
+/* ----- Solid ----- */
+.ds-badge--solid.ds-badge--neutral { background: var(--color-neutral-700); color: var(--color-white); }
+.ds-badge--solid.ds-badge--brand   { background: var(--color-brand-700);   color: var(--color-white); }
+.ds-badge--solid.ds-badge--info    { background: var(--color-info-600);    color: var(--color-white); }
+.ds-badge--solid.ds-badge--success { background: var(--color-success-600); color: var(--color-white); }
+.ds-badge--solid.ds-badge--warning { background: var(--color-warning-600); color: var(--color-white); }
+.ds-badge--solid.ds-badge--danger  { background: var(--color-danger-600);  color: var(--color-white); }
+
+/* ----- Soft ----- */
+.ds-badge--soft.ds-badge--neutral { background: var(--color-neutral-100); color: var(--color-text-primary); }
+.ds-badge--soft.ds-badge--brand   { background: var(--color-brand-50);    color: var(--color-brand-800); }
+.ds-badge--soft.ds-badge--info    { background: var(--color-feedback-info-bg);    color: var(--color-feedback-info-fg); }
+.ds-badge--soft.ds-badge--success { background: var(--color-feedback-success-bg); color: var(--color-feedback-success-fg); }
+.ds-badge--soft.ds-badge--warning { background: var(--color-feedback-warning-bg); color: var(--color-feedback-warning-fg); }
+.ds-badge--soft.ds-badge--danger  { background: var(--color-feedback-danger-bg);  color: var(--color-feedback-danger-fg); }
+
+/* ----- Outline ----- */
+.ds-badge--outline { background: transparent; }
+.ds-badge--outline.ds-badge--neutral { color: var(--color-text-primary); border-color: var(--color-border-default); }
+.ds-badge--outline.ds-badge--brand   { color: var(--color-brand-700);    border-color: var(--color-brand-300); }
+.ds-badge--outline.ds-badge--info    { color: var(--color-info-700);     border-color: var(--color-info-300); }
+.ds-badge--outline.ds-badge--success { color: var(--color-success-700);  border-color: var(--color-success-300); }
+.ds-badge--outline.ds-badge--warning { color: var(--color-warning-800);  border-color: var(--color-warning-300); }
+.ds-badge--outline.ds-badge--danger  { color: var(--color-danger-700);   border-color: var(--color-danger-300); }
+
+/* ----- Dot only ----- */
+.ds-badge--dot-only {
+  inline-size: 8px; block-size: 8px;
+  border-radius: var(--radius-full);
+  padding: 0;
+  border: 0;
+}
+.ds-badge--dot-only.ds-badge--neutral { background: var(--color-neutral-500); }
+.ds-badge--dot-only.ds-badge--brand   { background: var(--color-brand-700); }
+.ds-badge--dot-only.ds-badge--info    { background: var(--color-info-600); }
+.ds-badge--dot-only.ds-badge--success { background: var(--color-success-600); }
+.ds-badge--dot-only.ds-badge--warning { background: var(--color-warning-600); }
+.ds-badge--dot-only.ds-badge--danger  { background: var(--color-danger-600); }
+
+/* ----- Inline status dot ----- */
+.ds-badge__dot {
+  inline-size: 6px; block-size: 6px; border-radius: var(--radius-full);
+}
+.ds-badge__dot--neutral { background: var(--color-neutral-500); }
+.ds-badge__dot--brand   { background: var(--color-brand-700); }
+.ds-badge__dot--info    { background: var(--color-info-600); }
+.ds-badge__dot--success { background: var(--color-success-600); }
+.ds-badge__dot--warning { background: var(--color-warning-600); }
+.ds-badge__dot--danger  { background: var(--color-danger-600); }
+
+.ds-badge__icon { inline-size: 12px; block-size: 12px; display: inline-flex; align-items: center; justify-content: center; }

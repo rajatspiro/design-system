@@ -1,0 +1,44 @@
+name: Validate tokens
+
+# Runs on any PR that touches token sources or the build/check scripts.
+# When designers (or anyone) push a token change from Tokens Studio, this
+# guard ensures the source is parseable and the generated CSS / TS would
+# be in sync after re-running the build.
+
+on:
+  pull_request:
+    paths:
+      - "src/tokens/source/**"
+      - "src/tokens/build.mjs"
+      - "src/tokens/check-generated.mjs"
+      - "src/tokens/primitives.css"
+      - "src/tokens/semantics.css"
+      - "src/tokens/component-tokens.css"
+      - "src/tokens/tokens.ts"
+  push:
+    branches: [main]
+    paths:
+      - "src/tokens/**"
+
+jobs:
+  check:
+    name: tokens:check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # The build script is zero-dep, so no `npm ci` needed.
+      - name: Re-run build and verify generated files match source
+        run: node src/tokens/check-generated.mjs
+
+      - name: Validate JSON sources parse cleanly
+        run: |
+          for f in src/tokens/source/*.json; do
+            node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" \
+              || (echo "::error file=$f::Invalid JSON" && exit 1)
+          done
+          echo "All source JSON files parse cleanly."

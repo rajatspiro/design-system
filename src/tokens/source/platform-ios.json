@@ -1,0 +1,10 @@
+{
+  "$description": "iOS platform overrides. Wired into the React Native library in Phase 4. Only the font family differs from the web defaults today.",
+
+  "font-family": {
+    "sans": {
+      "$value": "-apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"SF Pro Display\", sans-serif",
+      "$type": "fontFamilies"
+    }
+  }
+}

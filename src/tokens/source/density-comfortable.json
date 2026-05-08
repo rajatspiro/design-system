@@ -1,0 +1,33 @@
+{
+  "$description": "Touch-target overrides for comfortable density. Activated via [data-density='comfortable'] on the web side, or via density='comfortable' theme on RN. Only dimensional tokens whose values change at this density appear here.",
+
+  "button": {
+    "height": {
+      "sm": { "$value": "36px", "$type": "sizing" },
+      "md": { "$value": "44px", "$type": "sizing", "$description": "WCAG-recommended minimum touch target" },
+      "lg": { "$value": "52px", "$type": "sizing" }
+    }
+  },
+
+  "input": {
+    "height": {
+      "sm": { "$value": "36px", "$type": "sizing" },
+      "md": { "$value": "44px", "$type": "sizing" },
+      "lg": { "$value": "52px", "$type": "sizing" }
+    },
+    "padding-inline": {
+      "md": { "$value": "{space.4}", "$type": "spacing" },
+      "lg": { "$value": "{space.5}", "$type": "spacing" }
+    }
+  },
+
+  "tabs": {
+    "trigger-padding": {
+      "md": { "$value": "{space.3} {space.5}", "$type": "spacing" },
+      "lg": { "$value": "{space.4} {space.6}", "$type": "spacing" }
+    }
+  },
+
+  "radio":    { "size": { "$value": "20px", "$type": "sizing" } },
+  "checkbox": { "size": { "$value": "20px", "$type": "sizing" } }
+}

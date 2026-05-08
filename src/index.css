@@ -1,13 +1,27 @@
+/* Token layer — load order matters: primitives → semantics → components */
+@import "./tokens/primitives.css";
+@import "./tokens/semantics.css";
+@import "./tokens/component-tokens.css";
+
+html {
+  color-scheme: light dark;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: var(--font-family-sans);
+  font-size: var(--text-body-m-size);
+  line-height: var(--text-body-m-line);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-default);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: var(--font-family-mono);
 }
+
+/* Universal focus reset — components opt into their own visible focus rings. */
+:focus { outline: none; }
+:focus-visible { outline: none; }

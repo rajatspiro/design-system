@@ -1,0 +1,63 @@
+.ds-progress { display: flex; flex-direction: column; gap: var(--space-1); inline-size: 100%; }
+
+.ds-progress__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: var(--progress-label-size);
+  color: var(--progress-label-color);
+}
+.ds-progress__label { font-weight: var(--font-weight-medium); }
+
+.ds-progress__track {
+  position: relative;
+  background: var(--progress-track-bg);
+  border-radius: var(--progress-radius);
+  overflow: hidden;
+}
+.ds-progress--xs .ds-progress__track { block-size: var(--progress-height-xs); }
+.ds-progress--sm .ds-progress__track { block-size: var(--progress-height-sm); }
+.ds-progress--md .ds-progress__track { block-size: var(--progress-height-md); }
+.ds-progress--lg .ds-progress__track { block-size: var(--progress-height-lg); }
+
+.ds-progress__fill {
+  block-size: 100%;
+  border-radius: inherit;
+  transition: inline-size var(--duration-base) var(--ease-out);
+}
+
+.ds-progress__track--indeterminate .ds-progress__fill {
+  inline-size: 40%;
+  animation: ds-progress-indeterminate var(--progress-indeterminate-duration) var(--ease-in-out) infinite;
+}
+
+@keyframes ds-progress-indeterminate {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+.ds-progress__segments {
+  display: flex;
+  gap: var(--progress-segment-gap);
+  block-size: 100%;
+}
+.ds-progress__segment {
+  flex: 1 1 0;
+  background: var(--progress-track-bg);
+  border-radius: var(--progress-radius);
+  overflow: hidden;
+}
+
+.ds-progress__description { margin: 0; color: var(--color-text-tertiary); font-size: var(--font-size-100); }
+
+/* Circular */
+.ds-progress-circular { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+.ds-progress-circular__svg circle:nth-child(2) { transition: stroke-dashoffset var(--duration-base) var(--ease-out); }
+.ds-progress-circular__svg--spin circle:nth-child(2) { stroke-dasharray: 60 200; animation: ds-progress-spin 1.4s var(--ease-in-out) infinite; }
+.ds-progress-circular__pct { position: absolute; font-size: var(--font-size-100); color: var(--color-text-secondary); }
+
+@keyframes ds-progress-spin {
+  from { transform: rotate(0deg); transform-origin: center; }
+  to { transform: rotate(360deg); transform-origin: center; }
+}

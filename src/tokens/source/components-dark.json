@@ -1,0 +1,31 @@
+{
+  "$description": "Dark-mode-only overrides for component tokens whose values can't be expressed as a flip of a semantic token alone (alpha-tinted overlays, neutral-stepped backgrounds for embedded controls). Most component tokens swap automatically because they reference semantic colors; this file is only the residue.",
+
+  "input": {
+    "focus-ring":       { "$value": "0 0 0 3px rgba(143, 166, 240, 0.30)", "$type": "other" },
+    "focus-ring-error": { "$value": "0 0 0 3px rgba(248, 113, 113, 0.30)", "$type": "other" }
+  },
+
+  "tag": {
+    "bg-hover-tint":   { "$value": "rgba(255, 255, 255, 0.06)", "$type": "color" },
+    "remove-hover-bg": { "$value": "rgba(255, 255, 255, 0.10)", "$type": "color" }
+  },
+
+  "progress": {
+    "track-bg":        { "$value": "{color.neutral.800}", "$type": "color" },
+    "circular-track":  { "$value": "{color.neutral.800}", "$type": "color" }
+  },
+
+  "dropdown": {
+    "item-bg-active":  { "$value": "{color.neutral.800}", "$type": "color" }
+  },
+
+  "select": {
+    "chip-bg":         { "$value": "{color.neutral.800}", "$type": "color" }
+  },
+
+  "numeric": {
+    "stepper-bg":       { "$value": "{color.neutral.800}", "$type": "color" },
+    "stepper-bg-hover": { "$value": "{color.neutral.700}", "$type": "color" }
+  }
+}

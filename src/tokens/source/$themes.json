@@ -1,0 +1,74 @@
+[
+  {
+    "id": "light-compact-web",
+    "name": "Light · Compact · Web",
+    "group": "Theme",
+    "selectedTokenSets": {
+      "core": "source",
+      "color-light": "enabled",
+      "components": "enabled",
+      "platform-web": "enabled"
+    }
+  },
+  {
+    "id": "dark-compact-web",
+    "name": "Dark · Compact · Web",
+    "group": "Theme",
+    "selectedTokenSets": {
+      "core": "source",
+      "color-dark": "enabled",
+      "components": "enabled",
+      "components-dark": "enabled",
+      "platform-web": "enabled"
+    }
+  },
+  {
+    "id": "light-comfortable-web",
+    "name": "Light · Comfortable · Web",
+    "group": "Theme",
+    "selectedTokenSets": {
+      "core": "source",
+      "color-light": "enabled",
+      "components": "enabled",
+      "density-comfortable": "enabled",
+      "platform-web": "enabled"
+    }
+  },
+  {
+    "id": "dark-comfortable-web",
+    "name": "Dark · Comfortable · Web",
+    "group": "Theme",
+    "selectedTokenSets": {
+      "core": "source",
+      "color-dark": "enabled",
+      "components": "enabled",
+      "components-dark": "enabled",
+      "density-comfortable": "enabled",
+      "platform-web": "enabled"
+    }
+  },
+  {
+    "id": "light-comfortable-ios",
+    "name": "Light · Comfortable · iOS",
+    "group": "Platform",
+    "selectedTokenSets": {
+      "core": "source",
+      "color-light": "enabled",
+      "components": "enabled",
+      "density-comfortable": "enabled",
+      "platform-ios": "enabled"
+    }
+  },
+  {
+    "id": "light-comfortable-android",
+    "name": "Light · Comfortable · Android",
+    "group": "Platform",
+    "selectedTokenSets": {
+      "core": "source",
+      "color-light": "enabled",
+      "components": "enabled",
+      "density-comfortable": "enabled",
+      "platform-android": "enabled"
+    }
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "$description": "Android platform overrides. Wired into the React Native library in Phase 4.",
+
+  "font-family": {
+    "sans": {
+      "$value": "Roboto, \"Noto Sans\", sans-serif",
+      "$type": "fontFamilies"
+    }
+  }
+}

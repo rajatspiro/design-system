@@ -1,0 +1,3 @@
+{
+  "$description": "Web platform tokens. Currently a no-op — the defaults in core.json are already web-appropriate. Kept as an explicit set so the build pipeline is symmetrical with iOS / Android."
+}

@@ -1,0 +1,108 @@
+.ds-tabs { display: flex; }
+.ds-tabs--horizontal { flex-direction: column; }
+.ds-tabs--vertical   { flex-direction: row; align-items: flex-start; gap: var(--space-4); }
+
+.ds-tabs__list {
+  display: inline-flex;
+  gap: var(--tabs-gap);
+  border-radius: var(--tabs-list-radius);
+}
+.ds-tabs--vertical .ds-tabs__list { flex-direction: column; align-items: stretch; }
+
+.ds-tabs__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: transparent;
+  border: 0;
+  color: var(--tabs-trigger-fg);
+  cursor: pointer;
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--tabs-trigger-radius);
+  transition: var(--tabs-trigger-transition);
+  white-space: nowrap;
+}
+@media (hover: hover) {
+  .ds-tabs__trigger:hover:not(:disabled) { color: var(--tabs-trigger-fg-hover); }
+}
+.ds-tabs__trigger:focus-visible { outline: none; box-shadow: var(--input-focus-ring); }
+.ds-tabs__trigger:disabled { color: var(--tabs-trigger-fg-disabled); cursor: not-allowed; }
+.ds-tabs__trigger--active { color: var(--tabs-trigger-fg-active); }
+
+.ds-tabs--sm .ds-tabs__trigger { padding: var(--tabs-trigger-padding-sm); font-size: var(--tabs-trigger-font-sm); }
+.ds-tabs--md .ds-tabs__trigger { padding: var(--tabs-trigger-padding-md); font-size: var(--tabs-trigger-font-md); }
+.ds-tabs--lg .ds-tabs__trigger { padding: var(--tabs-trigger-padding-lg); font-size: var(--tabs-trigger-font-lg); }
+
+.ds-tabs__icon { display: inline-flex; align-items: center; justify-content: center; }
+.ds-tabs__badge {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  min-inline-size: 18px;
+  block-size: 18px;
+  padding-inline: var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--color-neutral-200);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-50);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ds-tabs__panel { padding-block-start: var(--space-3); flex: 1 1 auto; outline: none; }
+.ds-tabs__panel:focus-visible { box-shadow: var(--input-focus-ring); border-radius: var(--radius-sm); }
+.ds-tabs--vertical > .ds-tabs__panel { padding-block-start: 0; padding-inline-start: var(--space-3); }
+
+/* ---------- Variant: underline ---------- */
+.ds-tabs--underline .ds-tabs__list { border-block-end: var(--border-width-1) solid var(--color-border-subtle); border-radius: 0; }
+.ds-tabs--underline .ds-tabs__trigger { border-radius: 0; position: relative; }
+.ds-tabs--underline .ds-tabs__trigger::after {
+  content: ""; position: absolute;
+  inset-inline: 0; inset-block-end: -1px;
+  block-size: 2px;
+  background: transparent;
+  border-radius: var(--radius-full);
+}
+.ds-tabs--underline .ds-tabs__trigger--active::after { background: var(--tabs-underline-color); }
+
+.ds-tabs--vertical.ds-tabs--underline .ds-tabs__list { border-block-end: 0; border-inline-end: var(--border-width-1) solid var(--color-border-subtle); }
+.ds-tabs--vertical.ds-tabs--underline .ds-tabs__trigger::after { inset-block: 0; inset-block-end: 0; inset-inline-end: -1px; inset-inline-start: auto; inline-size: 2px; block-size: auto; }
+
+/* ---------- Variant: pill ---------- */
+.ds-tabs--pill .ds-tabs__trigger--active {
+  background: var(--tabs-pill-bg-active);
+  color: var(--tabs-pill-fg-active);
+}
+
+/* ---------- Variant: segmented ---------- */
+.ds-tabs--segmented .ds-tabs__list {
+  background: var(--tabs-list-bg-segmented);
+  padding: var(--space-1);
+}
+.ds-tabs--segmented .ds-tabs__trigger--active {
+  background: var(--tabs-segmented-bg-active);
+  box-shadow: var(--elevation-e1);
+}
+
+/* ---------- Variant: enclosed (folder) ---------- */
+.ds-tabs--enclosed .ds-tabs__list { border-block-end: var(--border-width-1) solid var(--color-border-default); gap: 0; }
+.ds-tabs--enclosed .ds-tabs__trigger {
+  border: var(--border-width-1) solid transparent;
+  border-block-end-color: var(--color-border-default);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  margin-block-end: -1px;
+}
+.ds-tabs--enclosed .ds-tabs__trigger--active {
+  background: var(--color-surface-default);
+  border-color: var(--color-border-default);
+  border-block-end-color: var(--color-surface-default);
+}
+
+/* ---------- Modifier: full-width ---------- */
+.ds-tabs--full-width .ds-tabs__list { display: flex; }
+.ds-tabs--full-width .ds-tabs__trigger { flex: 1 1 0; justify-content: center; }
+
+/* ---------- Modifier: scrollable overflow (horizontal) ---------- */
+.ds-tabs--horizontal .ds-tabs__list {
+  overflow-x: auto;
+  scrollbar-width: thin;
+}

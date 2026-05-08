@@ -1,0 +1,91 @@
+.ds-input {
+  display: inline-flex;
+  align-items: center;
+  inline-size: 100%;
+  background-color: var(--input-bg);
+  color: var(--input-fg);
+  border: var(--input-border-width) solid var(--input-border);
+  border-radius: var(--input-radius);
+  font-family: var(--input-font-family);
+  font-size: var(--input-font-size);
+  line-height: var(--input-line-height);
+  transition: var(--input-transition);
+  gap: var(--input-icon-gap);
+}
+
+@media (hover: hover) {
+  .ds-input:hover:not(.ds-input--disabled):not(.ds-input--error) {
+    border-color: var(--input-border-hover);
+  }
+}
+
+.ds-input:focus-within {
+  border-color: var(--input-border-focus);
+  box-shadow: var(--input-focus-ring);
+}
+
+.ds-input--error { border-color: var(--input-border-error); }
+.ds-input--error:focus-within { box-shadow: var(--input-focus-ring-error); }
+
+.ds-input--disabled {
+  background-color: var(--input-bg-disabled);
+  color: var(--input-fg-disabled);
+  border-color: var(--input-border-disabled);
+  cursor: not-allowed;
+}
+
+.ds-input--sm { min-block-size: var(--input-height-sm); padding-inline: var(--input-padding-inline-sm); }
+.ds-input--md { min-block-size: var(--input-height-md); padding-inline: var(--input-padding-inline-md); }
+.ds-input--lg { min-block-size: var(--input-height-lg); padding-inline: var(--input-padding-inline-lg); }
+
+.ds-input__control {
+  flex: 1 1 auto;
+  inline-size: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  outline: none;
+  padding: 0;
+  min-inline-size: 0;
+}
+
+.ds-input__control:disabled { color: var(--input-fg-disabled); cursor: not-allowed; }
+.ds-input__control::placeholder { color: var(--input-fg-placeholder); }
+.ds-input__control[readonly] { cursor: default; }
+
+.ds-input__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--input-icon-color);
+  flex: 0 0 auto;
+}
+
+.ds-input__affix {
+  color: var(--color-text-tertiary);
+  flex: 0 0 auto;
+  user-select: none;
+}
+
+.ds-input__clear {
+  inline-size: 20px;
+  block-size: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-neutral-200);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (hover: hover) {
+  .ds-input__clear:hover { background: var(--color-neutral-300); }
+}
+.ds-input__clear:focus-visible {
+  outline: none;
+  box-shadow: var(--input-focus-ring);
+}

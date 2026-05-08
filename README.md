@@ -1,6 +1,6 @@
 # Design System
 
-A token-first React component library, shared by designers and developers.
+A token-first React component library, shared by Spiro's designers and developers.
 
 ## Principles carried forward
 

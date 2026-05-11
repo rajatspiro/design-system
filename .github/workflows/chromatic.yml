@@ -1,0 +1,42 @@
+name: Chromatic
+
+# Builds Storybook and publishes it to Chromatic on every push to main
+# and on every PR. The latest main build is hosted at a stable URL —
+# share that URL with anyone who needs to see the current design system.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  chromatic:
+    name: Build + publish Storybook
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Chromatic needs full history to track baselines between commits.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build tokens
+        run: npm run tokens:build
+
+      - name: Publish to Chromatic
+        uses: chromaui/action@latest
+        with:
+          projectToken: chpt_ea703ee05d00cea
+          # Don't fail the build on visual changes — they're for review, not gating.
+          exitZeroOnChanges: true
+          # Return as soon as Chromatic has the build; don't wait for snapshots.
+          exitOnceUploaded: true
+          # Skip if the diff doesn't touch anything Storybook would render.
+          onlyChanged: true

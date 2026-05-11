@@ -25,7 +25,10 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        # `npm install` instead of `npm ci` so transitive version drift
+        # (e.g. yaml@^2.x bumping to a new minor) doesn't fail the build.
+        # We're not chasing byte-reproducibility on this pipeline.
+        run: npm install --no-audit --no-fund
 
       - name: Build tokens
         run: npm run tokens:build

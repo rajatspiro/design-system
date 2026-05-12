@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  :root {
+    --bg: #FFFFFF;
+    --fg: #11181C;
+    --fg-muted: #697177;
+    --border: #E6E8EB;
+    --action-bg: #3C61DD;
+    --action-bg-hover: #385BCC;
+    --action-fg: #FFFFFF;
+    --bg-sunken: #F8F9FA;
+    --success: #15803D;
+    --error: #B91C1C;
+    --warning: #B45309;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1A1F23;
+      --fg: #F0F2F4;
+      --fg-muted: #889096;
+      --border: #2C3338;
+      --bg-sunken: #11181C;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--fg);
+    background: var(--bg);
+  }
+  h1 {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .subtitle {
+    color: var(--fg-muted);
+    margin: 0 0 16px;
+  }
+  .config {
+    background: var(--bg-sunken);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    color: var(--fg-muted);
+  }
+  .config strong { color: var(--fg); font-weight: 500; }
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  button {
+    appearance: none;
+    border: 0;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    background: var(--action-bg);
+    color: var(--action-fg);
+    transition: background-color 0.15s ease;
+  }
+  button:hover:not(:disabled) { background: var(--action-bg-hover); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.secondary {
+    background: transparent;
+    color: var(--fg);
+    border: 1px solid var(--border);
+  }
+  button.secondary:hover:not(:disabled) { background: var(--bg-sunken); }
+  .log {
+    background: var(--bg-sunken);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    height: 180px;
+    overflow-y: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .log .line { white-space: pre-wrap; }
+  .log .info { color: var(--fg); }
+  .log .muted { color: var(--fg-muted); }
+  .log .ok { color: var(--success); }
+  .log .err { color: var(--error); }
+  .log .warn { color: var(--warning); }
+  .log .empty { color: var(--fg-muted); font-style: italic; }
+</style>
+</head>
+<body>
+  <h1>Design System Sync</h1>
+  <p class="subtitle">Syncs tokens and components from your GitHub repo into this Figma file.</p>
+
+  <div class="config">
+    <div><strong>Repo:</strong> rajatspiro/design-system</div>
+    <div><strong>Branch:</strong> main</div>
+  </div>
+
+  <div class="actions">
+    <button id="sync-tokens">Sync tokens from GitHub</button>
+    <button id="generate-components" class="secondary" disabled title="Available in the next plugin version">Generate components (coming next)</button>
+  </div>
+
+  <div class="log" id="log">
+    <div class="line empty">Logs appear here.</div>
+  </div>
+
+<script>
+  const TOKENS_URL = 'https://raw.githubusercontent.com/rajatspiro/design-system/main/src/tokens/tokens.figma-variables.json';
+
+  const logEl = document.getElementById('log');
+  function log(msg, kind = 'info') {
+    // Remove the placeholder if present.
+    const empty = logEl.querySelector('.empty');
+    if (empty) empty.remove();
+    const line = document.createElement('div');
+    line.className = 'line ' + kind;
+    line.textContent = msg;
+    logEl.appendChild(line);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function setBusy(busy) {
+    document.getElementById('sync-tokens').disabled = busy;
+  }
+
+  document.getElementById('sync-tokens').addEventListener('click', async () => {
+    setBusy(true);
+    log('Fetching tokens from ' + TOKENS_URL, 'muted');
+    try {
+      const resp = await fetch(TOKENS_URL, { cache: 'no-store' });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status + ' ' + resp.statusText);
+      const data = await resp.json();
+      log('Fetched ' + data.variables.length + ' variables across ' + data.modes.length + ' modes', 'info');
+      // Hand off to main thread.
+      parent.postMessage({ pluginMessage: { type: 'sync-tokens', data } }, '*');
+    } catch (e) {
+      log('Fetch failed: ' + e.message, 'err');
+      setBusy(false);
+    }
+  });
+
+  // Receive log + status messages from the main thread.
+  window.onmessage = (event) => {
+    const msg = event.data.pluginMessage;
+    if (!msg) return;
+    if (msg.type === 'log') log(msg.text, msg.kind || 'info');
+    if (msg.type === 'sync-done') setBusy(false);
+  };
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "Design System Sync",
+  "id": "design-system-sync-rajatspiro",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "networkAccess": {
+    "allowedDomains": ["https://raw.githubusercontent.com"],
+    "reasoning": "Fetch token and component spec JSON from the design-system GitHub repo."
+  },
+  "documentationUrl": "https://github.com/rajatspiro/design-system/tree/main/figma-plugin"
+}

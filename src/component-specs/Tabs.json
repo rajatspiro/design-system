@@ -1,0 +1,89 @@
+{
+  "$schema": "design-system.component.v1",
+  "name": "Tabs",
+  "description": "Tablist + tab triggers for switching between mutually-exclusive panels.",
+  "page": "Components / Tabs",
+
+  "variantProperties": {
+    "variant": ["underline", "pill", "segmented", "enclosed"],
+    "size": ["sm", "md", "lg"],
+    "state": ["default", "hover", "active", "disabled"],
+    "hasIcon": [false, true],
+    "hasBadge": [false, true]
+  },
+
+  "structure": {
+    "type": "frame",
+    "name": "Tab trigger",
+    "autoLayout": {
+      "direction": "horizontal",
+      "padding": { "inline": "{space/4}", "block": "{space/3}" },
+      "gap": "{space/2}",
+      "primaryAlignment": "center",
+      "counterAlignment": "center"
+    },
+    "size": { "height": "auto", "width": "auto" },
+    "fills": [],
+    "strokes": [],
+    "cornerRadius": "{tabs/trigger-radius}",
+    "children": [
+      { "type": "icon-slot", "name": "Icon", "appliesIf": "${hasIcon}", "size": { "width": 16, "height": 16 } },
+      {
+        "type": "text",
+        "name": "Label",
+        "content": "Tab",
+        "fills": [{ "variable": "{tabs/trigger-fg}" }],
+        "fontSize": "{tabs/trigger-font/${size}}",
+        "fontWeight": "{font-weight/medium}"
+      },
+      {
+        "type": "frame",
+        "name": "Badge",
+        "appliesIf": "${hasBadge}",
+        "autoLayout": {
+          "direction": "horizontal",
+          "padding": { "inline": "{space/1}", "block": 0 },
+          "gap": 0,
+          "primaryAlignment": "center",
+          "counterAlignment": "center"
+        },
+        "size": { "width": "auto", "height": 18 },
+        "cornerRadius": 9999,
+        "fills": [{ "type": "solid", "variable": "{color/neutral/200}" }],
+        "strokes": [],
+        "children": [
+          { "type": "text", "name": "Count", "content": "4", "fills": [{ "variable": "{color/text/primary}" }], "fontSize": "{font-size/50}", "fontWeight": "{font-weight/semibold}" }
+        ]
+      }
+    ]
+  },
+
+  "variantOverrides": [
+    { "when": { "state": "hover" },    "structure": { "children": [{ "type": "text", "name": "Label", "fills": [{ "variable": "{tabs/trigger-fg-hover}" }] }] } },
+    { "when": { "state": "active" },   "structure": { "children": [{ "type": "text", "name": "Label", "fills": [{ "variable": "{tabs/trigger-fg-active}" }] }] } },
+    { "when": { "state": "disabled" }, "structure": {
+        "opacity": { "appliesIf": true, "variable": "{button/disabled-opacity}" },
+        "children": [{ "type": "text", "name": "Label", "fills": [{ "variable": "{tabs/trigger-fg-disabled}" }] }]
+    } },
+    { "when": { "variant": "pill", "state": "active" }, "structure": {
+        "fills": [{ "type": "solid", "variable": "{tabs/pill-bg-active}" }],
+        "children": [{ "type": "text", "name": "Label", "fills": [{ "variable": "{tabs/pill-fg-active}" }] }]
+    } },
+    { "when": { "variant": "segmented" }, "structure": {
+        "fills": [{ "type": "solid", "variable": "{tabs/list-bg-segmented}" }]
+    } },
+    { "when": { "variant": "segmented", "state": "active" }, "structure": {
+        "fills": [{ "type": "solid", "variable": "{tabs/segmented-bg-active}" }]
+    } },
+    { "when": { "variant": "enclosed" }, "structure": {
+        "strokes": [{ "variable": "{color/border/default}", "weight": "{border-width/1}", "position": "inside" }]
+    } }
+  ],
+
+  "documentation": {
+    "anatomy": "[ icon? ] [ label ] [ badge? ]",
+    "do": ["Use underline for primary in-page navigation.", "Use segmented for view toggles (day/week/month)."],
+    "dont": ["Don't put 8+ tabs — switch to a Menu.", "Don't conflate Tabs with a wizard."],
+    "tokensConsumed": ["tabs/{trigger-fg,trigger-fg-active,trigger-fg-hover,trigger-fg-disabled,underline-color,pill-bg-active,pill-fg-active,list-bg-segmented,segmented-bg-active,trigger-radius,trigger-font/{sm|md|lg}}"]
+  }
+}

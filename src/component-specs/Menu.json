@@ -1,0 +1,93 @@
+{
+  "$schema": "design-system.component.v1",
+  "name": "Menu",
+  "description": "Action menu (single menu item — compose into a full menu via Auto-Layout in instances).",
+  "page": "Components / Menu",
+
+  "variantProperties": {
+    "kind": ["default", "destructive", "checkbox", "submenu"],
+    "state": ["default", "hover", "focus-visible", "disabled"],
+    "hasIcon": [false, true],
+    "hasShortcut": [false, true]
+  },
+
+  "structure": {
+    "type": "frame",
+    "name": "Menu item",
+    "autoLayout": {
+      "direction": "horizontal",
+      "padding": { "inline": "{space/3}", "block": "{space/2}" },
+      "gap": "{space/2}",
+      "primaryAlignment": "space-between",
+      "counterAlignment": "center"
+    },
+    "size": { "width": 220, "height": "auto" },
+    "fills": [],
+    "strokes": [],
+    "cornerRadius": "{dropdown/item-radius}",
+    "children": [
+      {
+        "type": "frame",
+        "name": "Leading",
+        "autoLayout": {
+          "direction": "horizontal",
+          "padding": { "inline": 0, "block": 0 },
+          "gap": "{space/2}",
+          "primaryAlignment": "start",
+          "counterAlignment": "center"
+        },
+        "size": { "width": "auto", "height": "auto" },
+        "fills": [],
+        "strokes": [],
+        "children": [
+          { "type": "text", "name": "Check", "appliesIf": "${kind === 'checkbox'}", "content": "✓", "fills": [{ "variable": "{color/text/link}" }], "fontSize": 12, "fontWeight": "{font-weight/bold}" },
+          { "type": "icon-slot", "name": "Icon", "appliesIf": "${hasIcon && kind !== 'checkbox'}", "size": { "width": 16, "height": 16 } },
+          {
+            "type": "text",
+            "name": "Label",
+            "content": "Menu item",
+            "fills": [{ "variable": "{dropdown/item-fg}" }],
+            "fontSize": "{text/body-s/size}",
+            "fontWeight": "{font-weight/regular}"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Trailing",
+        "content": "${kind === 'submenu' ? '›' : (hasShortcut ? '⌘K' : '')}",
+        "fills": [{ "variable": "{dropdown/shortcut-color}" }],
+        "fontSize": "{font-size/100}",
+        "fontWeight": "{font-weight/regular}"
+      }
+    ]
+  },
+
+  "variantOverrides": [
+    { "when": { "state": "hover" },         "structure": { "fills": [{ "type": "solid", "variable": "{dropdown/item-bg-hover}" }] } },
+    { "when": { "state": "focus-visible" }, "structure": { "fills": [{ "type": "solid", "variable": "{dropdown/item-bg-hover}" }] } },
+    { "when": { "kind": "destructive" }, "structure": {
+        "children": [{
+          "type": "frame", "name": "Leading",
+          "children": [{ "type": "text", "name": "Label", "fills": [{ "variable": "{dropdown/item-fg-destructive}" }] }]
+        }]
+    } },
+    { "when": { "kind": "destructive", "state": "hover" }, "structure": {
+        "fills": [{ "type": "solid", "variable": "{dropdown/item-bg-destructive-hover}" }]
+    } },
+    { "when": { "state": "disabled" }, "structure": {
+        "opacity": { "appliesIf": true, "variable": "{button/disabled-opacity}" },
+        "children": [{
+          "type": "frame", "name": "Leading",
+          "children": [{ "type": "text", "name": "Label", "fills": [{ "variable": "{dropdown/item-fg-disabled}" }] }]
+        }]
+    } }
+  ],
+
+  "documentation": {
+    "anatomy": "[ check / icon? ] label … [ shortcut / submenu-chevron ]",
+    "do": ["Group destructive items at the bottom, separated by a divider.", "Use shortcut to surface keyboard equivalents."],
+    "dont": ["Don't use Menu where a Select fits — Menus are for actions, not form values."],
+    "tokensConsumed": ["dropdown/{item-fg,item-bg-hover,item-fg-destructive,item-bg-destructive-hover,item-fg-disabled,item-radius,shortcut-color}"]
+  }
+}

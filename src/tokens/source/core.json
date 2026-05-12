@@ -101,9 +101,21 @@
   },
 
   "font-family": {
-    "sans":  { "$value": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif", "$type": "fontFamilies" },
-    "serif": { "$value": "ui-serif, Georgia, \"Times New Roman\", serif", "$type": "fontFamilies" },
-    "mono":  { "$value": "ui-monospace, SFMono-Regular, Menlo, Consolas, \"Liberation Mono\", monospace", "$type": "fontFamilies" }
+    "sans":  {
+      "$value": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif",
+      "$type": "fontFamilies",
+      "$extensions": { "design-system.figma-value": "Inter" }
+    },
+    "serif": {
+      "$value": "ui-serif, Georgia, \"Times New Roman\", serif",
+      "$type": "fontFamilies",
+      "$extensions": { "design-system.figma-value": "Georgia" }
+    },
+    "mono":  {
+      "$value": "ui-monospace, SFMono-Regular, Menlo, Consolas, \"Liberation Mono\", monospace",
+      "$type": "fontFamilies",
+      "$extensions": { "design-system.figma-value": "Menlo" }
+    }
   },
 
   "font-size": {
@@ -135,10 +147,27 @@
   },
 
   "font-weight": {
-    "regular":  { "$value": "400", "$type": "fontWeights" },
-    "medium":   { "$value": "500", "$type": "fontWeights", "$description": "Existing button weight" },
-    "semibold": { "$value": "600", "$type": "fontWeights" },
-    "bold":     { "$value": "700", "$type": "fontWeights" }
+    "regular":  {
+      "$value": "400",
+      "$type": "fontWeights",
+      "$extensions": { "design-system.figma-value": "Regular" }
+    },
+    "medium":   {
+      "$value": "500",
+      "$type": "fontWeights",
+      "$description": "Existing button weight",
+      "$extensions": { "design-system.figma-value": "Medium" }
+    },
+    "semibold": {
+      "$value": "600",
+      "$type": "fontWeights",
+      "$extensions": { "design-system.figma-value": "Semi Bold" }
+    },
+    "bold":     {
+      "$value": "700",
+      "$type": "fontWeights",
+      "$extensions": { "design-system.figma-value": "Bold" }
+    }
   },
 
   "radius": {

@@ -94,7 +94,7 @@
     },
     {
       "name": "badge/font-weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/medium"
@@ -760,7 +760,7 @@
     },
     {
       "name": "button/font-weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "text/label-m/weight"
@@ -4594,7 +4594,7 @@
     },
     {
       "name": "field/label/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "text/label-m/weight"
@@ -4669,16 +4669,16 @@
       "type": "STRING",
       "values": {
         "light-compact": {
-          "value": "ui-monospace, SFMono-Regular, Menlo, Consolas, \"Liberation Mono\", monospace"
+          "value": "Menlo"
         },
         "dark-compact": {
-          "value": "ui-monospace, SFMono-Regular, Menlo, Consolas, \"Liberation Mono\", monospace"
+          "value": "Menlo"
         },
         "light-comfortable": {
-          "value": "ui-monospace, SFMono-Regular, Menlo, Consolas, \"Liberation Mono\", monospace"
+          "value": "Menlo"
         },
         "dark-comfortable": {
-          "value": "ui-monospace, SFMono-Regular, Menlo, Consolas, \"Liberation Mono\", monospace"
+          "value": "Menlo"
         }
       }
     },
@@ -4687,16 +4687,16 @@
       "type": "STRING",
       "values": {
         "light-compact": {
-          "value": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif"
+          "value": "Inter"
         },
         "dark-compact": {
-          "value": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif"
+          "value": "Inter"
         },
         "light-comfortable": {
-          "value": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif"
+          "value": "Inter"
         },
         "dark-comfortable": {
-          "value": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif"
+          "value": "Inter"
         }
       }
     },
@@ -4705,16 +4705,16 @@
       "type": "STRING",
       "values": {
         "light-compact": {
-          "value": "ui-serif, Georgia, \"Times New Roman\", serif"
+          "value": "Georgia"
         },
         "dark-compact": {
-          "value": "ui-serif, Georgia, \"Times New Roman\", serif"
+          "value": "Georgia"
         },
         "light-comfortable": {
-          "value": "ui-serif, Georgia, \"Times New Roman\", serif"
+          "value": "Georgia"
         },
         "dark-comfortable": {
-          "value": "ui-serif, Georgia, \"Times New Roman\", serif"
+          "value": "Georgia"
         }
       }
     },
@@ -4900,73 +4900,73 @@
     },
     {
       "name": "font-weight/bold",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
-          "value": 700
+          "value": "Bold"
         },
         "dark-compact": {
-          "value": 700
+          "value": "Bold"
         },
         "light-comfortable": {
-          "value": 700
+          "value": "Bold"
         },
         "dark-comfortable": {
-          "value": 700
+          "value": "Bold"
         }
       }
     },
     {
       "name": "font-weight/medium",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
-          "value": 500
+          "value": "Medium"
         },
         "dark-compact": {
-          "value": 500
+          "value": "Medium"
         },
         "light-comfortable": {
-          "value": 500
+          "value": "Medium"
         },
         "dark-comfortable": {
-          "value": 500
+          "value": "Medium"
         }
       }
     },
     {
       "name": "font-weight/regular",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
-          "value": 400
+          "value": "Regular"
         },
         "dark-compact": {
-          "value": 400
+          "value": "Regular"
         },
         "light-comfortable": {
-          "value": 400
+          "value": "Regular"
         },
         "dark-comfortable": {
-          "value": 400
+          "value": "Regular"
         }
       }
     },
     {
       "name": "font-weight/semibold",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
-          "value": 600
+          "value": "Semi Bold"
         },
         "dark-compact": {
-          "value": 600
+          "value": "Semi Bold"
         },
         "light-comfortable": {
-          "value": 600
+          "value": "Semi Bold"
         },
         "dark-comfortable": {
-          "value": 600
+          "value": "Semi Bold"
         }
       }
     },
@@ -7348,7 +7348,7 @@
     },
     {
       "name": "text/body-l/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/regular"
@@ -7402,7 +7402,7 @@
     },
     {
       "name": "text/body-m/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/regular"
@@ -7456,7 +7456,7 @@
     },
     {
       "name": "text/body-s/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/regular"
@@ -7510,7 +7510,7 @@
     },
     {
       "name": "text/caption/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/regular"
@@ -7582,7 +7582,7 @@
     },
     {
       "name": "text/code/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/regular"
@@ -7636,7 +7636,7 @@
     },
     {
       "name": "text/display-l/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/semibold"
@@ -7690,7 +7690,7 @@
     },
     {
       "name": "text/display-m/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/semibold"
@@ -7744,7 +7744,7 @@
     },
     {
       "name": "text/display-s/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/semibold"
@@ -7798,7 +7798,7 @@
     },
     {
       "name": "text/heading-1/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/semibold"
@@ -7852,7 +7852,7 @@
     },
     {
       "name": "text/heading-2/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/semibold"
@@ -7906,7 +7906,7 @@
     },
     {
       "name": "text/heading-3/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/semibold"
@@ -7960,7 +7960,7 @@
     },
     {
       "name": "text/heading-4/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/semibold"
@@ -8014,7 +8014,7 @@
     },
     {
       "name": "text/heading-5/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/semibold"
@@ -8068,7 +8068,7 @@
     },
     {
       "name": "text/heading-6/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/semibold"
@@ -8122,7 +8122,7 @@
     },
     {
       "name": "text/label-l/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/medium"
@@ -8176,7 +8176,7 @@
     },
     {
       "name": "text/label-m/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/medium"
@@ -8230,7 +8230,7 @@
     },
     {
       "name": "text/label-s/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/medium"
@@ -8302,7 +8302,7 @@
     },
     {
       "name": "text/overline/weight",
-      "type": "FLOAT",
+      "type": "STRING",
       "values": {
         "light-compact": {
           "alias": "font-weight/semibold"

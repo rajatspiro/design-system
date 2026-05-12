@@ -1,0 +1,87 @@
+{
+  "$schema": "design-system.component.v1",
+  "name": "ProgressBar",
+  "description": "Linear progress indicator (determinate).",
+  "page": "Components / ProgressBar",
+
+  "variantProperties": {
+    "size": ["xs", "sm", "md", "lg"],
+    "tone": ["brand", "success", "warning", "danger"],
+    "hasLabel": [false, true],
+    "showPercentage": [false, true]
+  },
+
+  "structure": {
+    "type": "frame",
+    "name": "Progress",
+    "autoLayout": {
+      "direction": "vertical",
+      "padding": { "inline": 0, "block": 0 },
+      "gap": "{space/1}",
+      "primaryAlignment": "start",
+      "counterAlignment": "stretch"
+    },
+    "size": { "width": 320, "height": "auto" },
+    "fills": [],
+    "strokes": [],
+    "children": [
+      {
+        "type": "frame",
+        "name": "Header",
+        "appliesIf": "${hasLabel || showPercentage}",
+        "autoLayout": {
+          "direction": "horizontal",
+          "padding": { "inline": 0, "block": 0 },
+          "gap": "{space/2}",
+          "primaryAlignment": "space-between",
+          "counterAlignment": "center"
+        },
+        "size": { "width": "auto", "height": "auto" },
+        "fills": [],
+        "strokes": [],
+        "children": [
+          { "type": "text", "name": "Label",      "appliesIf": "${hasLabel}",       "content": "Uploading",   "fills": [{ "variable": "{progress/label-color}" }], "fontSize": "{progress/label-size}", "fontWeight": "{font-weight/medium}" },
+          { "type": "text", "name": "Percentage", "appliesIf": "${showPercentage}", "content": "60%",          "fills": [{ "variable": "{progress/label-color}" }], "fontSize": "{progress/label-size}", "fontWeight": "{font-weight/regular}" }
+        ]
+      },
+      {
+        "type": "frame",
+        "name": "Track",
+        "autoLayout": {
+          "direction": "horizontal",
+          "padding": { "inline": 0, "block": 0 },
+          "gap": 0,
+          "primaryAlignment": "start",
+          "counterAlignment": "stretch"
+        },
+        "size": { "width": "auto", "height": "{progress/height/${size}}" },
+        "cornerRadius": "{progress/radius}",
+        "fills": [{ "type": "solid", "variable": "{progress/track-bg}" }],
+        "strokes": [],
+        "children": [
+          {
+            "type": "frame",
+            "name": "Fill",
+            "autoLayout": null,
+            "size": { "width": 192, "height": "{progress/height/${size}}" },
+            "cornerRadius": "{progress/radius}",
+            "fills": [
+              { "type": "solid", "variable": "{progress/fill-brand}",   "appliesIf": "${tone === 'brand'}" },
+              { "type": "solid", "variable": "{progress/fill-success}", "appliesIf": "${tone === 'success'}" },
+              { "type": "solid", "variable": "{progress/fill-warning}", "appliesIf": "${tone === 'warning'}" },
+              { "type": "solid", "variable": "{progress/fill-danger}",  "appliesIf": "${tone === 'danger'}" }
+            ],
+            "strokes": []
+          }
+        ]
+      }
+    ]
+  },
+
+  "documentation": {
+    "anatomy": "[ label … pct? ]\n[ ──── track w/ fill at 60% ────]",
+    "do": ["Use indeterminate for unknown durations; flip to determinate as soon as you can."],
+    "dont": ["Don't animate determinate progress for trivial async (< 250ms) — it'll flash."],
+    "tokensConsumed": ["progress/{track-bg,radius,label-color,label-size,height/{xs|sm|md|lg},fill-{brand|success|warning|danger}}"]
+  }
+}

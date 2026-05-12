@@ -1,0 +1,109 @@
+{
+  "$schema": "design-system.component.v1",
+  "name": "MultiSelect",
+  "description": "Multi-value dropdown form control with chips inside the trigger.",
+  "page": "Components / MultiSelect",
+
+  "variantProperties": {
+    "size": ["sm", "md", "lg"],
+    "state": ["default", "hover", "open", "focus", "disabled", "error"],
+    "chipCount": ["none", "few", "many"]
+  },
+
+  "structure": {
+    "type": "frame",
+    "name": "Trigger",
+    "autoLayout": {
+      "direction": "horizontal",
+      "padding": { "inline": "{input/padding-inline/${size}}", "block": "{space/1}" },
+      "gap": "{space/1}",
+      "primaryAlignment": "space-between",
+      "counterAlignment": "center"
+    },
+    "size": { "height": "auto", "width": 320 },
+    "fills": [{ "type": "solid", "variable": "{select/trigger-bg}" }],
+    "strokes": [{ "variable": "{select/trigger-border}", "weight": "{input/border-width}", "position": "inside" }],
+    "cornerRadius": "{select/trigger-radius}",
+    "children": [
+      {
+        "type": "frame",
+        "name": "Chips",
+        "autoLayout": {
+          "direction": "horizontal",
+          "padding": { "inline": 0, "block": 0 },
+          "gap": "{space/1}",
+          "primaryAlignment": "start",
+          "counterAlignment": "center"
+        },
+        "size": { "width": "auto", "height": "auto" },
+        "fills": [],
+        "strokes": [],
+        "children": [
+          {
+            "type": "frame",
+            "name": "Placeholder",
+            "appliesIf": "${chipCount === 'none'}",
+            "autoLayout": {
+              "direction": "horizontal",
+              "padding": { "inline": 0, "block": 0 },
+              "gap": 0,
+              "primaryAlignment": "start",
+              "counterAlignment": "center"
+            },
+            "size": { "width": "auto", "height": "auto" },
+            "fills": [],
+            "strokes": [],
+            "children": [
+              { "type": "text", "name": "Placeholder", "content": "Select…", "fills": [{ "variable": "{input/fg-placeholder}" }], "fontSize": "{input/font-size}", "fontWeight": "{font-weight/regular}" }
+            ]
+          },
+          {
+            "type": "frame",
+            "name": "Chip",
+            "appliesIf": "${chipCount === 'few' || chipCount === 'many'}",
+            "autoLayout": {
+              "direction": "horizontal",
+              "padding": { "inline": "{space/2}", "block": "{space/1}" },
+              "gap": "{space/1}",
+              "primaryAlignment": "center",
+              "counterAlignment": "center"
+            },
+            "size": { "width": "auto", "height": "auto" },
+            "cornerRadius": "{select/chip-radius}",
+            "fills": [{ "type": "solid", "variable": "{select/chip-bg}" }],
+            "strokes": [],
+            "children": [
+              { "type": "text", "name": "Chip label", "content": "frontend", "fills": [{ "variable": "{select/chip-fg}" }], "fontSize": "{font-size/100}", "fontWeight": "{font-weight/regular}" },
+              { "type": "text", "name": "Chip ×",     "content": "×",         "fills": [{ "variable": "{color/text/tertiary}" }], "fontSize": 11, "fontWeight": "{font-weight/medium}" }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Chevron",
+        "content": "▾",
+        "fills": [{ "variable": "{color/text/tertiary}" }],
+        "fontSize": 12,
+        "fontWeight": "{font-weight/regular}"
+      }
+    ]
+  },
+
+  "variantOverrides": [
+    { "when": { "state": "focus" },    "structure": { "strokes": [{ "variable": "{input/border-focus}", "weight": "{input/border-width}", "position": "inside" }] } },
+    { "when": { "state": "open" },     "structure": { "strokes": [{ "variable": "{input/border-focus}", "weight": "{input/border-width}", "position": "inside" }] } },
+    { "when": { "state": "error" },    "structure": { "strokes": [{ "variable": "{input/border-error}", "weight": "{input/border-width}", "position": "inside" }] } },
+    { "when": { "state": "disabled" }, "structure": {
+        "fills":   [{ "type": "solid", "variable": "{input/bg-disabled}" }],
+        "strokes": [{ "variable": "{input/border-disabled}", "weight": "{input/border-width}", "position": "inside" }]
+    } }
+  ],
+
+  "documentation": {
+    "anatomy": "[ chip…chip…chip | chevron ]",
+    "do": ["Use searchable by default (5+ options is the threshold)."],
+    "dont": ["Don't show MultiSelect when the user usually picks exactly one — switch to Select."],
+    "tokensConsumed": ["select/{trigger-bg,trigger-fg,trigger-border,trigger-radius,chip-bg,chip-fg,chip-radius}"]
+  }
+}

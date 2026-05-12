@@ -356,10 +356,13 @@ function figmaType(t) {
     case "borderRadius":
     case "borderWidth":
     case "fontSizes":
-    case "fontWeights":
     case "lineHeights":
     case "opacity":
       return "FLOAT";
+    case "fontWeights":
+      // Figma's text.fontStyle is a string ("Medium", "Bold"). Numeric weights
+      // can't be bound directly; the figma-value override translates 500→"Medium".
+      return "STRING";
     case "fontFamilies":
     case "letterSpacing":
       return "STRING";
@@ -370,8 +373,26 @@ function figmaType(t) {
 
 /** Format a token node's value for Figma Variables.
  *  Returns { alias: "path/to/var" } for references, { value: <literal> } otherwise,
- *  or null if the value can't be represented (compound spacing, etc). */
+ *  or null if the value can't be represented (compound spacing, etc).
+ *
+ *  If a node has `$extensions["design-system.figma-value"]`, that value is used
+ *  for Figma output regardless of `$value`. This lets us keep CSS-friendly
+ *  values (e.g. font-family stacks, numeric font-weight) in `$value` while
+ *  giving Figma the strings it actually needs (e.g. "Inter", "Medium"). */
 function figmaValueFor(node, type) {
+  // Figma-specific override takes precedence. Only applies to literals — aliases
+  // are inferred from $value structure either way.
+  const override = node.$extensions && node.$extensions["design-system.figma-value"];
+  if (override !== undefined) {
+    if (type === "COLOR") return { value: String(override) };
+    if (type === "FLOAT") {
+      const n = typeof override === "number" ? override : parseFloat(override);
+      return Number.isFinite(n) ? { value: n } : null;
+    }
+    if (type === "STRING") return { value: String(override) };
+    return null;
+  }
+
   const v = node.$value;
 
   if (typeof v === "string") {
@@ -386,9 +407,6 @@ function figmaValueFor(node, type) {
   }
   if (type === "FLOAT") {
     const str = String(v).trim();
-    // Skip compound values like "12px 16px" or "{space.3} {space.4}" — Figma
-    // Variables are scalar. Components consume per-side padding as separate
-    // padding-inline / padding-block bindings via auto-layout.
     if (/\s/.test(str)) return null;
     const n = parseFloat(str);
     return Number.isFinite(n) ? { value: n } : null;

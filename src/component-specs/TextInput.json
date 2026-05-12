@@ -1,0 +1,75 @@
+{
+  "$schema": "design-system.component.v1",
+  "name": "TextInput",
+  "description": "Single-line text input.",
+  "page": "Components / TextInput",
+
+  "variantProperties": {
+    "size": ["sm", "md", "lg"],
+    "state": ["default", "hover", "focus", "error", "success", "disabled", "read-only"],
+    "hasLeadingIcon": [false, true],
+    "hasTrailingIcon": [false, true],
+    "clearable": [false, true]
+  },
+
+  "structure": {
+    "type": "frame",
+    "autoLayout": {
+      "direction": "horizontal",
+      "padding": { "inline": "{input/padding-inline/${size}}", "block": 0 },
+      "gap": "{input/icon-gap}",
+      "primaryAlignment": "start",
+      "counterAlignment": "center"
+    },
+    "size": { "height": "{input/height/${size}}", "width": 280 },
+    "fills": [{ "type": "solid", "variable": "{input/bg}" }],
+    "strokes": [{ "variable": "{input/border}", "weight": "{input/border-width}", "position": "inside" }],
+    "cornerRadius": "{input/radius}",
+    "children": [
+      {
+        "type": "icon-slot",
+        "name": "Leading icon",
+        "appliesIf": "${hasLeadingIcon}",
+        "size": { "width": 16, "height": 16 }
+      },
+      {
+        "type": "text",
+        "name": "Value",
+        "content": "Placeholder",
+        "fills": [{ "variable": "{input/fg-placeholder}" }],
+        "fontSize": "{input/font-size}",
+        "fontWeight": "{font-weight/regular}"
+      },
+      {
+        "type": "icon-slot",
+        "name": "Clear",
+        "appliesIf": "${clearable}",
+        "size": { "width": 16, "height": 16 }
+      },
+      {
+        "type": "icon-slot",
+        "name": "Trailing icon",
+        "appliesIf": "${hasTrailingIcon}",
+        "size": { "width": 16, "height": 16 }
+      }
+    ]
+  },
+
+  "variantOverrides": [
+    { "when": { "state": "hover" },    "structure": { "strokes": [{ "variable": "{input/border-hover}",   "weight": "{input/border-width}", "position": "inside" }] } },
+    { "when": { "state": "focus" },    "structure": { "strokes": [{ "variable": "{input/border-focus}",   "weight": "{input/border-width}", "position": "inside" }] } },
+    { "when": { "state": "error" },    "structure": { "strokes": [{ "variable": "{input/border-error}",   "weight": "{input/border-width}", "position": "inside" }] } },
+    { "when": { "state": "success" },  "structure": { "strokes": [{ "variable": "{input/border-success}", "weight": "{input/border-width}", "position": "inside" }] } },
+    { "when": { "state": "disabled" }, "structure": {
+        "fills":   [{ "type": "solid", "variable": "{input/bg-disabled}" }],
+        "strokes": [{ "variable": "{input/border-disabled}", "weight": "{input/border-width}", "position": "inside" }]
+    } }
+  ],
+
+  "documentation": {
+    "anatomy": "[ leading-icon? ] [ value-text ] [ clear-button? ] [ trailing-icon? ]",
+    "do": ["Always pair with Field.", "Use prefix/suffix for static units."],
+    "dont": ["Don't put interactive icons in the icon slots — those are decorative."],
+    "tokensConsumed": ["input/{bg,fg-placeholder,border,border-hover,border-focus,border-error,border-success,border-disabled,bg-disabled}", "input/height/{sm|md|lg}", "input/padding-inline/{sm|md|lg}", "input/radius", "input/border-width", "input/icon-gap"]
+  }
+}

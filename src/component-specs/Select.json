@@ -1,0 +1,63 @@
+{
+  "$schema": "design-system.component.v1",
+  "name": "Select",
+  "description": "Single-value dropdown form control (trigger + popover).",
+  "page": "Components / Select",
+
+  "variantProperties": {
+    "size": ["sm", "md", "lg"],
+    "state": ["default", "hover", "open", "focus", "disabled", "error"]
+  },
+
+  "structure": {
+    "type": "frame",
+    "name": "Trigger",
+    "autoLayout": {
+      "direction": "horizontal",
+      "padding": { "inline": "{input/padding-inline/${size}}", "block": 0 },
+      "gap": "{space/2}",
+      "primaryAlignment": "space-between",
+      "counterAlignment": "center"
+    },
+    "size": { "height": "{input/height/${size}}", "width": 280 },
+    "fills": [{ "type": "solid", "variable": "{select/trigger-bg}" }],
+    "strokes": [{ "variable": "{select/trigger-border}", "weight": "{input/border-width}", "position": "inside" }],
+    "cornerRadius": "{select/trigger-radius}",
+    "children": [
+      {
+        "type": "text",
+        "name": "Value",
+        "content": "Select…",
+        "fills": [{ "variable": "{input/fg-placeholder}" }],
+        "fontSize": "{input/font-size}",
+        "fontWeight": "{font-weight/regular}"
+      },
+      {
+        "type": "text",
+        "name": "Chevron",
+        "content": "▾",
+        "fills": [{ "variable": "{color/text/tertiary}" }],
+        "fontSize": 12,
+        "fontWeight": "{font-weight/regular}"
+      }
+    ]
+  },
+
+  "variantOverrides": [
+    { "when": { "state": "hover" },    "structure": { "strokes": [{ "variable": "{input/border-hover}", "weight": "{input/border-width}", "position": "inside" }] } },
+    { "when": { "state": "focus" },    "structure": { "strokes": [{ "variable": "{input/border-focus}", "weight": "{input/border-width}", "position": "inside" }] } },
+    { "when": { "state": "open" },     "structure": { "strokes": [{ "variable": "{input/border-focus}", "weight": "{input/border-width}", "position": "inside" }] } },
+    { "when": { "state": "error" },    "structure": { "strokes": [{ "variable": "{input/border-error}", "weight": "{input/border-width}", "position": "inside" }] } },
+    { "when": { "state": "disabled" }, "structure": {
+        "fills":   [{ "type": "solid", "variable": "{input/bg-disabled}" }],
+        "strokes": [{ "variable": "{input/border-disabled}", "weight": "{input/border-width}", "position": "inside" }]
+    } }
+  ],
+
+  "documentation": {
+    "anatomy": "[ value | placeholder | chevron ]",
+    "do": ["Use Select for form values.", "Use searchable when there are 8+ options."],
+    "dont": ["Don't use Select for navigation — use a Menu."],
+    "tokensConsumed": ["select/{trigger-bg,trigger-fg,trigger-border,trigger-radius}", "input/{height,padding-inline,border-hover,border-focus,border-error,bg-disabled,border-disabled,fg-placeholder,font-size}"]
+  }
+}

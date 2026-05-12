@@ -1,0 +1,61 @@
+{
+  "$schema": "design-system.component.v1",
+  "name": "Textarea",
+  "description": "Multi-line text input.",
+  "page": "Components / Textarea",
+
+  "variantProperties": {
+    "state": ["default", "focus", "error", "disabled"],
+    "showCount": [false, true]
+  },
+
+  "structure": {
+    "type": "frame",
+    "autoLayout": {
+      "direction": "vertical",
+      "padding": { "inline": "{input/padding-inline/md}", "block": "{textarea/padding-block}" },
+      "gap": 4,
+      "primaryAlignment": "start",
+      "counterAlignment": "start"
+    },
+    "size": { "width": 320, "height": "{textarea/min-height}" },
+    "fills": [{ "type": "solid", "variable": "{input/bg}" }],
+    "strokes": [{ "variable": "{input/border}", "weight": "{input/border-width}", "position": "inside" }],
+    "cornerRadius": "{input/radius}",
+    "children": [
+      {
+        "type": "text",
+        "name": "Value",
+        "content": "Multi-line placeholder text…",
+        "fills": [{ "variable": "{input/fg-placeholder}" }],
+        "fontSize": "{input/font-size}",
+        "fontWeight": "{font-weight/regular}"
+      },
+      {
+        "type": "text",
+        "name": "Counter",
+        "appliesIf": "${showCount}",
+        "content": "0 / 140",
+        "fills": [{ "variable": "{color/text/muted}" }],
+        "fontSize": "{font-size/100}",
+        "fontWeight": "{font-weight/regular}"
+      }
+    ]
+  },
+
+  "variantOverrides": [
+    { "when": { "state": "focus" },    "structure": { "strokes": [{ "variable": "{input/border-focus}", "weight": "{input/border-width}", "position": "inside" }] } },
+    { "when": { "state": "error" },    "structure": { "strokes": [{ "variable": "{input/border-error}", "weight": "{input/border-width}", "position": "inside" }] } },
+    { "when": { "state": "disabled" }, "structure": {
+        "fills":   [{ "type": "solid", "variable": "{input/bg-disabled}" }],
+        "strokes": [{ "variable": "{input/border-disabled}", "weight": "{input/border-width}", "position": "inside" }]
+    } }
+  ],
+
+  "documentation": {
+    "anatomy": "Text area + optional character counter aligned to the bottom-right.",
+    "do": ["Pair with Field.", "Use maxLength + showCount when the limit is meaningful."],
+    "dont": ["Don't auto-resize inside fixed-height containers."],
+    "tokensConsumed": ["input/{bg,fg-placeholder,border,border-focus,border-error,bg-disabled,border-disabled}", "textarea/{min-height,padding-block}", "input/padding-inline/md", "input/radius", "input/border-width"]
+  }
+}

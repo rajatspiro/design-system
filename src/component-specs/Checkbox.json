@@ -1,0 +1,121 @@
+{
+  "$schema": "design-system.component.v1",
+  "name": "Checkbox",
+  "description": "Boolean control with checked / unchecked / indeterminate states.",
+  "page": "Components / Checkbox",
+
+  "variantProperties": {
+    "state": ["unchecked", "checked", "indeterminate", "disabled", "checked-disabled", "focus-visible"],
+    "hasDescription": [false, true]
+  },
+
+  "structure": {
+    "type": "frame",
+    "autoLayout": {
+      "direction": "horizontal",
+      "padding": { "inline": 0, "block": 0 },
+      "gap": "{checkbox/label-gap}",
+      "primaryAlignment": "start",
+      "counterAlignment": "start"
+    },
+    "size": { "width": "auto", "height": "auto" },
+    "fills": [],
+    "strokes": [],
+    "children": [
+      {
+        "type": "frame",
+        "name": "Indicator",
+        "autoLayout": {
+          "direction": "horizontal",
+          "padding": { "inline": 0, "block": 0 },
+          "gap": 0,
+          "primaryAlignment": "center",
+          "counterAlignment": "center"
+        },
+        "size": { "width": "{checkbox/size}", "height": "{checkbox/size}" },
+        "cornerRadius": "{checkbox/radius}",
+        "fills": [{ "type": "solid", "variable": "{checkbox/bg}" }],
+        "strokes": [{ "variable": "{checkbox/border}", "weight": "{border-width/1}", "position": "inside" }],
+        "children": []
+      },
+      {
+        "type": "frame",
+        "name": "Text stack",
+        "autoLayout": {
+          "direction": "vertical",
+          "padding": { "inline": 0, "block": 0 },
+          "gap": 2,
+          "primaryAlignment": "start",
+          "counterAlignment": "start"
+        },
+        "size": { "width": "auto", "height": "auto" },
+        "fills": [],
+        "strokes": [],
+        "children": [
+          { "type": "text", "name": "Label", "content": "Checkbox label", "fills": [{ "variable": "{checkbox/label-color}" }], "fontSize": "{text/body-s/size}", "fontWeight": "{font-weight/regular}" },
+          { "type": "text", "name": "Description", "appliesIf": "${hasDescription}", "content": "Optional supporting text.", "fills": [{ "variable": "{color/text/tertiary}" }], "fontSize": "{font-size/100}", "fontWeight": "{font-weight/regular}" }
+        ]
+      }
+    ]
+  },
+
+  "variantOverrides": [
+    { "when": { "state": "checked" }, "structure": {
+      "children": [
+        {
+          "type": "frame",
+          "name": "Indicator",
+          "fills": [{ "type": "solid", "variable": "{checkbox/bg-checked}" }],
+          "strokes": [{ "variable": "{checkbox/border-checked}", "weight": "{border-width/1}", "position": "inside" }],
+          "children": [
+            { "type": "text", "name": "Mark", "content": "✓", "fills": [{ "variable": "{checkbox/mark}" }], "fontSize": 12, "fontWeight": "{font-weight/bold}" }
+          ]
+        }
+      ]
+    } },
+    { "when": { "state": "indeterminate" }, "structure": {
+      "children": [
+        {
+          "type": "frame",
+          "name": "Indicator",
+          "fills": [{ "type": "solid", "variable": "{checkbox/bg-checked}" }],
+          "strokes": [{ "variable": "{checkbox/border-checked}", "weight": "{border-width/1}", "position": "inside" }],
+          "children": [
+            { "type": "text", "name": "Mark", "content": "—", "fills": [{ "variable": "{checkbox/mark}" }], "fontSize": 12, "fontWeight": "{font-weight/bold}" }
+          ]
+        }
+      ]
+    } },
+    { "when": { "state": "disabled" }, "structure": {
+      "opacity": { "appliesIf": true, "variable": "{button/disabled-opacity}" },
+      "children": [
+        {
+          "type": "frame",
+          "name": "Indicator",
+          "fills": [{ "type": "solid", "variable": "{checkbox/bg-disabled}" }],
+          "strokes": [{ "variable": "{checkbox/border-disabled}", "weight": "{border-width/1}", "position": "inside" }]
+        }
+      ]
+    } },
+    { "when": { "state": "checked-disabled" }, "structure": {
+      "opacity": { "appliesIf": true, "variable": "{button/disabled-opacity}" },
+      "children": [
+        {
+          "type": "frame",
+          "name": "Indicator",
+          "fills": [{ "type": "solid", "variable": "{checkbox/bg-checked}" }],
+          "children": [
+            { "type": "text", "name": "Mark", "content": "✓", "fills": [{ "variable": "{checkbox/mark}" }], "fontSize": 12, "fontWeight": "{font-weight/bold}" }
+          ]
+        }
+      ]
+    } }
+  ],
+
+  "documentation": {
+    "anatomy": "[ □ / ✓ / — ] Label · Description?",
+    "do": ["Use indeterminate for 'select all' when only some children are checked."],
+    "dont": ["Don't use a single checkbox without a label."],
+    "tokensConsumed": ["checkbox/{size,radius,bg,bg-checked,border,border-checked,mark,bg-disabled,border-disabled,label-color,label-gap}"]
+  }
+}

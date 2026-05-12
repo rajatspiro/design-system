@@ -1,0 +1,96 @@
+{
+  "$schema": "design-system.component.v1",
+  "name": "NumericInput",
+  "description": "Numeric text input with stepper buttons.",
+  "page": "Components / NumericInput",
+
+  "variantProperties": {
+    "size": ["sm", "md", "lg"],
+    "state": ["default", "focus", "error", "disabled"],
+    "hasUnit": [false, true]
+  },
+
+  "structure": {
+    "type": "frame",
+    "autoLayout": {
+      "direction": "horizontal",
+      "padding": { "inline": 0, "block": 0 },
+      "gap": 0,
+      "primaryAlignment": "start",
+      "counterAlignment": "stretch"
+    },
+    "size": { "height": "{input/height/${size}}", "width": 200 },
+    "fills": [{ "type": "solid", "variable": "{input/bg}" }],
+    "strokes": [{ "variable": "{input/border}", "weight": "{input/border-width}", "position": "inside" }],
+    "cornerRadius": "{input/radius}",
+    "children": [
+      {
+        "type": "frame",
+        "name": "Value area",
+        "autoLayout": {
+          "direction": "horizontal",
+          "padding": { "inline": "{input/padding-inline/${size}}", "block": 0 },
+          "gap": "{input/icon-gap}",
+          "primaryAlignment": "start",
+          "counterAlignment": "center"
+        },
+        "size": { "width": "auto", "height": "auto" },
+        "fills": [],
+        "strokes": [],
+        "children": [
+          {
+            "type": "text",
+            "name": "Value",
+            "content": "12,345",
+            "fills": [{ "variable": "{input/fg}" }],
+            "fontSize": "{input/font-size}",
+            "fontWeight": "{font-weight/regular}"
+          },
+          {
+            "type": "text",
+            "name": "Unit",
+            "appliesIf": "${hasUnit}",
+            "content": "kg",
+            "fills": [{ "variable": "{color/text/tertiary}" }],
+            "fontSize": "{input/font-size}",
+            "fontWeight": "{font-weight/regular}"
+          }
+        ]
+      },
+      {
+        "type": "frame",
+        "name": "Steppers",
+        "autoLayout": {
+          "direction": "vertical",
+          "padding": { "inline": 0, "block": 0 },
+          "gap": 0,
+          "primaryAlignment": "center",
+          "counterAlignment": "center"
+        },
+        "size": { "width": "{numeric/stepper-width}", "height": "auto" },
+        "fills": [{ "type": "solid", "variable": "{numeric/stepper-bg}" }],
+        "strokes": [],
+        "children": [
+          { "type": "icon-slot", "name": "Increment", "size": { "width": 12, "height": 10 } },
+          { "type": "icon-slot", "name": "Decrement", "size": { "width": 12, "height": 10 } }
+        ]
+      }
+    ]
+  },
+
+  "variantOverrides": [
+    { "when": { "state": "focus" },    "structure": { "strokes": [{ "variable": "{input/border-focus}", "weight": "{input/border-width}", "position": "inside" }] } },
+    { "when": { "state": "error" },    "structure": { "strokes": [{ "variable": "{input/border-error}", "weight": "{input/border-width}", "position": "inside" }] } },
+    { "when": { "state": "disabled" }, "structure": {
+        "fills":   [{ "type": "solid", "variable": "{input/bg-disabled}" }],
+        "strokes": [{ "variable": "{input/border-disabled}", "weight": "{input/border-width}", "position": "inside" }]
+    } }
+  ],
+
+  "documentation": {
+    "anatomy": "[ value ] [ unit? ] | [ ▴ / ▾ steppers ]",
+    "do": ["Pair with Field.", "Use unit for static suffix; don't bake it into the value."],
+    "dont": ["Don't allow step smaller than the format precision."],
+    "tokensConsumed": ["input/{bg,fg,border,border-focus,border-error,bg-disabled}", "numeric/{stepper-bg,stepper-width,stepper-fg}", "input/height/{sm|md|lg}", "input/padding-inline/{sm|md|lg}"]
+  }
+}

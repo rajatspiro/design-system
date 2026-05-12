@@ -1,0 +1,48 @@
+{
+  "$schema": "design-system.component.v1",
+  "name": "ButtonGroup",
+  "description": "Connected horizontal group of Buttons that share borders.",
+  "page": "Components / ButtonGroup",
+
+  "variantProperties": {
+    "size": ["sm", "md", "lg"]
+  },
+
+  "structure": {
+    "type": "frame",
+    "autoLayout": {
+      "direction": "horizontal",
+      "padding": { "inline": 0, "block": 0 },
+      "gap": 0,
+      "primaryAlignment": "start",
+      "counterAlignment": "center"
+    },
+    "size": { "height": "{button/height/${size}}", "width": "auto" },
+    "fills": [],
+    "strokes": [],
+    "children": [
+      {
+        "type": "icon-slot",
+        "name": "Button 1 placeholder",
+        "size": { "width": 80, "height": 32 }
+      },
+      {
+        "type": "icon-slot",
+        "name": "Button 2 placeholder",
+        "size": { "width": 80, "height": 32 }
+      },
+      {
+        "type": "icon-slot",
+        "name": "Button 3 placeholder",
+        "size": { "width": 80, "height": 32 }
+      }
+    ]
+  },
+
+  "documentation": {
+    "anatomy": "[ Button ][ Button ][ Button ] — child Buttons share variant + size; outer corners rounded.",
+    "do": ["Use to express closely-related actions.", "Set aria-label on the group describing its purpose."],
+    "dont": ["Don't mix variants inside one group.", "Don't include more than 5 buttons — switch to Menu."],
+    "tokensConsumed": ["button/height/{sm|md|lg}", "button/border-width", "button/radius"]
+  }
+}

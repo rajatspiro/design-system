@@ -1,0 +1,69 @@
+{
+  "$schema": "design-system.component.v1",
+  "name": "Field",
+  "description": "Form-field wrapper providing label, helper / error / success text, and a slot for the control.",
+  "page": "Components / Field",
+
+  "variantProperties": {
+    "status": ["default", "error", "success"],
+    "required": [false, true],
+    "disabled": [false, true]
+  },
+
+  "structure": {
+    "type": "frame",
+    "autoLayout": {
+      "direction": "vertical",
+      "padding": { "inline": 0, "block": 0 },
+      "gap": "{field/stack-gap}",
+      "primaryAlignment": "start",
+      "counterAlignment": "start"
+    },
+    "size": { "width": 320, "height": "auto" },
+    "fills": [],
+    "strokes": [],
+    "children": [
+      {
+        "type": "text",
+        "name": "Label",
+        "content": "${required ? 'Label *' : 'Label'}",
+        "fills": [{ "variable": "{field/label-color}" }],
+        "fontSize": "{field/label-size}",
+        "fontWeight": "{field/label-weight}"
+      },
+      {
+        "type": "icon-slot",
+        "name": "Control slot",
+        "size": { "width": 320, "height": 40 }
+      },
+      {
+        "type": "text",
+        "name": "Helper text",
+        "content": "${status === 'error' ? 'Error message' : status === 'success' ? 'Looks good' : 'Helper text'}",
+        "fills": [
+          { "variable": "{field/error-color}",   "appliesIf": "${status === 'error'}" },
+          { "variable": "{field/success-color}", "appliesIf": "${status === 'success'}" },
+          { "variable": "{field/helper-color}",  "appliesIf": "${status === 'default'}" }
+        ],
+        "fontSize": "{field/helper-size}",
+        "fontWeight": "{font-weight/regular}"
+      }
+    ]
+  },
+
+  "variantOverrides": [
+    {
+      "when": { "disabled": true },
+      "structure": {
+        "opacity": { "appliesIf": true, "variable": "{button/disabled-opacity}" }
+      }
+    }
+  ],
+
+  "documentation": {
+    "anatomy": "Label · description? · control slot · helper / error / success text.",
+    "do": ["Wrap every input with a Field.", "Show only one of helper / error / success at a time."],
+    "dont": ["Don't use placeholder in place of a label.", "Don't render multiple controls in one Field unless they form a group."],
+    "tokensConsumed": ["field/label-{color,size,weight}", "field/helper-{color,size}", "field/error-color", "field/success-color", "field/stack-gap"]
+  }
+}

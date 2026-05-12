@@ -113,7 +113,8 @@
 
   <div class="actions">
     <button id="sync-tokens">Sync tokens from GitHub</button>
-    <button id="generate-components" class="secondary" disabled title="Available in the next plugin version">Generate components (coming next)</button>
+    <button id="sync-text-styles" class="secondary">Sync Text Styles</button>
+    <button id="generate-components" class="secondary">Generate components</button>
   </div>
 
   <div class="log" id="log">
@@ -121,7 +122,26 @@
   </div>
 
 <script>
-  const TOKENS_URL = 'https://raw.githubusercontent.com/rajatspiro/design-system/main/src/tokens/tokens.figma-variables.json';
+  const REPO_RAW = 'https://raw.githubusercontent.com/rajatspiro/design-system/main';
+  const TOKENS_URL = REPO_RAW + '/src/tokens/tokens.figma-variables.json';
+  const SPECS = [
+    'Button',
+    'Badge',
+    'ButtonGroup',
+    'Field',
+    'TextInput',
+    'Textarea',
+    'NumericInput',
+    'Radio',
+    'Checkbox',
+    'Tag',
+    'Toast',
+    'Tabs',
+    'Select',
+    'MultiSelect',
+    'Menu',
+    'ProgressBar'
+  ];
 
   const logEl = document.getElementById('log');
   function log(msg, kind = 'info') {
@@ -137,6 +157,8 @@
 
   function setBusy(busy) {
     document.getElementById('sync-tokens').disabled = busy;
+    document.getElementById('sync-text-styles').disabled = busy;
+    document.getElementById('generate-components').disabled = busy;
   }
 
   document.getElementById('sync-tokens').addEventListener('click', async () => {
@@ -147,8 +169,33 @@
       if (!resp.ok) throw new Error('HTTP ' + resp.status + ' ' + resp.statusText);
       const data = await resp.json();
       log('Fetched ' + data.variables.length + ' variables across ' + data.modes.length + ' modes', 'info');
-      // Hand off to main thread.
       parent.postMessage({ pluginMessage: { type: 'sync-tokens', data } }, '*');
+    } catch (e) {
+      log('Fetch failed: ' + e.message, 'err');
+      setBusy(false);
+    }
+  });
+
+  document.getElementById('sync-text-styles').addEventListener('click', () => {
+    setBusy(true);
+    log('Syncing Text Styles…', 'muted');
+    parent.postMessage({ pluginMessage: { type: 'sync-text-styles' } }, '*');
+  });
+
+  document.getElementById('generate-components').addEventListener('click', async () => {
+    setBusy(true);
+    log('Fetching ' + SPECS.length + ' component spec(s)…', 'muted');
+    try {
+      const specs = [];
+      for (const name of SPECS) {
+        const url = REPO_RAW + '/src/component-specs/' + name + '.json';
+        const resp = await fetch(url, { cache: 'no-store' });
+        if (!resp.ok) throw new Error(name + ': HTTP ' + resp.status);
+        specs.push(await resp.json());
+        log('  · ' + name + '.json', 'muted');
+      }
+      log('Fetched ' + specs.length + ' spec(s)', 'info');
+      parent.postMessage({ pluginMessage: { type: 'generate-components', specs } }, '*');
     } catch (e) {
       log('Fetch failed: ' + e.message, 'err');
       setBusy(false);
@@ -161,6 +208,8 @@
     if (!msg) return;
     if (msg.type === 'log') log(msg.text, msg.kind || 'info');
     if (msg.type === 'sync-done') setBusy(false);
+    if (msg.type === 'sync-text-styles-done') setBusy(false);
+    if (msg.type === 'generate-done') setBusy(false);
   };
 </script>
 </body>

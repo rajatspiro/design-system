@@ -8,6 +8,5 @@
   "networkAccess": {
     "allowedDomains": ["https://raw.githubusercontent.com"],
     "reasoning": "Fetch token and component spec JSON from the design-system GitHub repo."
-  },
-  "documentationUrl": "https://github.com/rajatspiro/design-system/tree/main/figma-plugin"
+  }
 }

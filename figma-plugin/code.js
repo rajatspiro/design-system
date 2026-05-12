@@ -75,33 +75,43 @@ function ensureCollection(name) {
   return collection;
 }
 
-/** Ensure every desired mode exists on the collection. Returns Map<modeName, modeId>. */
+/** Ensure every desired mode exists on the collection.
+ *  Returns Map<jsonModeId, figmaModeId> so callers can look up by the IDs
+ *  that appear inside `values` objects in our JSON (e.g. "light-compact"),
+ *  not by Figma's display names ("Light · Compact"). */
 function ensureModes(collection, desiredModes) {
-  const byName = new Map();
-  for (const m of collection.modes) byName.set(m.name, m.modeId);
+  const idToModeId = new Map();
+  const existingByName = new Map();
+  for (const m of collection.modes) existingByName.set(m.name, m.modeId);
 
-  // Figma collections start with one default mode named "Mode 1". If none of
-  // our desired modes match what's already there AND it's still the default,
+  // Figma collections start with one default mode named "Mode 1". If we
+  // haven't matched any of our desired names yet and that's the only mode,
   // rename it to our first desired mode rather than adding a 5th.
   if (
     collection.modes.length === 1 &&
-    !desiredModes.some((d) => byName.has(d.name))
+    !desiredModes.some((d) => existingByName.has(d.name))
   ) {
     const onlyMode = collection.modes[0];
     const first = desiredModes[0];
     collection.renameMode(onlyMode.modeId, first.name);
-    byName.delete(onlyMode.name);
-    byName.set(first.name, onlyMode.modeId);
+    existingByName.delete(onlyMode.name);
+    existingByName.set(first.name, onlyMode.modeId);
+    idToModeId.set(first.id, onlyMode.modeId);
     uiLog("Renamed default mode → " + first.name, "muted");
   }
 
   for (const desired of desiredModes) {
-    if (byName.has(desired.name)) continue;
+    if (idToModeId.has(desired.id)) continue;
+    if (existingByName.has(desired.name)) {
+      idToModeId.set(desired.id, existingByName.get(desired.name));
+      continue;
+    }
     const newId = collection.addMode(desired.name);
-    byName.set(desired.name, newId);
+    existingByName.set(desired.name, newId);
+    idToModeId.set(desired.id, newId);
     uiLog("Added mode: " + desired.name, "ok");
   }
-  return byName;
+  return idToModeId;
 }
 
 /** Index of variables by name in the given collection. */
@@ -187,34 +197,34 @@ function syncTokens(data) {
   for (const entry of data.variables) {
     const v = ensureVariable(entry.name, entry.type, collection, varIndex);
     if (!v) continue;
-    for (const [modeName, val] of Object.entries(entry.values)) {
-      const modeId = modeIds.get(modeName);
-      if (!modeId) continue;
+    for (const [modeId, val] of Object.entries(entry.values)) {
+      const figmaModeId = modeIds.get(modeId);
+      if (!figmaModeId) continue;
       if (val.value !== undefined) {
-        applyValue(v, modeId, val, entry.type, varIndex);
+        applyValue(v, figmaModeId, val, entry.type, varIndex);
       }
     }
     processed += 1;
   }
   uiLog("Pass 1 complete: " + processed + " variables created or updated", "ok");
 
-  // Pass 2 — resolve aliases now that all variables exist.
+  // Pass 2 — resolve aliases now that every variable exists.
   let aliasCount = 0;
   let aliasFailures = 0;
   for (const entry of data.variables) {
     const v = varIndex.get(entry.name);
     if (!v) continue;
-    for (const [modeName, val] of Object.entries(entry.values)) {
-      const modeId = modeIds.get(modeName);
-      if (!modeId) continue;
-      if (val.alias) {
+    for (const [modeId, val] of Object.entries(entry.values)) {
+      const figmaModeId = modeIds.get(modeId);
+      if (!figmaModeId) continue;
+      if (val && val.alias) {
         const target = varIndex.get(val.alias);
         if (!target) {
           aliasFailures += 1;
-          uiLog("  · missing alias target: " + entry.name + " → " + val.alias, "warn");
+          if (aliasFailures <= 5) uiLog("  · missing alias target: " + entry.name + " → " + val.alias, "warn");
           continue;
         }
-        v.setValueForMode(modeId, figma.variables.createVariableAlias(target));
+        v.setValueForMode(figmaModeId, figma.variables.createVariableAlias(target));
         aliasCount += 1;
       }
     }

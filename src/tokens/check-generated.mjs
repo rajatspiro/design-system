@@ -16,7 +16,13 @@ import { execFileSync } from "node:child_process";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_TOKENS = __dirname;
 
-const FILES = ["primitives.css", "semantics.css", "component-tokens.css", "tokens.ts"];
+const FILES = [
+  "primitives.css",
+  "semantics.css",
+  "component-tokens.css",
+  "tokens.ts",
+  "tokens.figma-variables.json",
+];
 
 // Snapshot current generated files before re-running the build.
 const snapshot = Object.fromEntries(

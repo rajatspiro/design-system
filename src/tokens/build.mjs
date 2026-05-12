@@ -342,15 +342,125 @@ export function resolveToken(
   writeFileSync(join(OUT, "tokens.ts"), out);
 }
 
+/* ---------- emit tokens.figma-variables.json ---------- */
+
+/** Map our $type values to Figma's Variable resolvedType. Composite types
+ *  (boxShadow, typography) and CSS-only types (durations, easings, z-index)
+ *  return null and are skipped — they can't be represented as Figma Variables. */
+function figmaType(t) {
+  switch (t) {
+    case "color": return "COLOR";
+    case "dimension":
+    case "spacing":
+    case "sizing":
+    case "borderRadius":
+    case "borderWidth":
+    case "fontSizes":
+    case "fontWeights":
+    case "lineHeights":
+    case "opacity":
+      return "FLOAT";
+    case "fontFamilies":
+    case "letterSpacing":
+      return "STRING";
+    default:
+      return null;
+  }
+}
+
+/** Format a token node's value for Figma Variables.
+ *  Returns { alias: "path/to/var" } for references, { value: <literal> } otherwise,
+ *  or null if the value can't be represented (compound spacing, etc). */
+function figmaValueFor(node, type) {
+  const v = node.$value;
+
+  if (typeof v === "string") {
+    const refMatch = v.match(/^\{([^}]+)\}$/);
+    if (refMatch) {
+      return { alias: refMatch[1].replace(/\./g, "/") };
+    }
+  }
+
+  if (type === "COLOR") {
+    return { value: String(v) };
+  }
+  if (type === "FLOAT") {
+    const str = String(v).trim();
+    // Skip compound values like "12px 16px" or "{space.3} {space.4}" — Figma
+    // Variables are scalar. Components consume per-side padding as separate
+    // padding-inline / padding-block bindings via auto-layout.
+    if (/\s/.test(str)) return null;
+    const n = parseFloat(str);
+    return Number.isFinite(n) ? { value: n } : null;
+  }
+  if (type === "STRING") {
+    return { value: String(v) };
+  }
+  return null;
+}
+
+function emitFigmaVariablesJSON() {
+  const modes = [
+    { id: "light-compact",     name: "Light · Compact",     tree: lightTree },
+    { id: "dark-compact",      name: "Dark · Compact",      tree: darkTree },
+    { id: "light-comfortable", name: "Light · Comfortable", tree: lightCompfy },
+    { id: "dark-comfortable",  name: "Dark · Comfortable",  tree: darkCompfy },
+  ].map((m) => ({ ...m, lookup: flatten(m.tree) }));
+
+  // Union of every token path across every mode.
+  const allPaths = new Set();
+  for (const m of modes) for (const p of m.lookup.keys()) allPaths.add(p);
+
+  const variables = [];
+  for (const path of [...allPaths].sort()) {
+    // Type comes from the first mode that has the node — types are consistent
+    // across modes for a given token.
+    let firstNode = null;
+    for (const m of modes) {
+      if (m.lookup.has(path)) { firstNode = m.lookup.get(path); break; }
+    }
+    if (!firstNode) continue;
+
+    const type = figmaType(firstNode.$type);
+    if (!type) continue;
+
+    const valuesByMode = {};
+    for (const m of modes) {
+      const n = m.lookup.get(path);
+      if (!n) continue;
+      const val = figmaValueFor(n, type);
+      if (val) valuesByMode[m.id] = val;
+    }
+    if (Object.keys(valuesByMode).length === 0) continue;
+
+    variables.push({
+      name: path.replace(/\./g, "/"),
+      type,
+      values: valuesByMode,
+    });
+  }
+
+  const out = {
+    $schema: "design-system.figma-variables.v1",
+    collectionName: "Design System",
+    modes: modes.map(({ id, name }) => ({ id, name })),
+    variables,
+  };
+
+  writeFileSync(join(OUT, "tokens.figma-variables.json"), JSON.stringify(out, null, 2));
+}
+
 /* ---------- run ---------- */
 
 emitPrimitivesCSS();
 emitSemanticsCSS();
 emitComponentsCSS();
 emitTokensTS();
+emitFigmaVariablesJSON();
 
 console.log("✓ tokens built:");
 console.log("  - src/tokens/primitives.css");
 console.log("  - src/tokens/semantics.css");
 console.log("  - src/tokens/component-tokens.css");
 console.log("  - src/tokens/tokens.ts");
+console.log("  - src/tokens/tokens.figma-variables.json");

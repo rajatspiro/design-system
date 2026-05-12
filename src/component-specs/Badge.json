@@ -1,0 +1,104 @@
+{
+  "$schema": "design-system.component.v1",
+  "name": "Badge",
+  "description": "Passive label — status, count, classification. Not interactive.",
+  "page": "Components / Badge",
+
+  "variantProperties": {
+    "variant": ["solid", "soft", "outline", "dot"],
+    "tone": ["neutral", "brand", "info", "success", "warning", "danger"],
+    "size": ["xs", "sm", "md"],
+    "hasIcon": [false, true],
+    "hasDot": [false, true]
+  },
+
+  "structure": {
+    "type": "frame",
+    "autoLayout": {
+      "direction": "horizontal",
+      "padding": { "inline": "{badge/padding-inline/${size}}", "block": 0 },
+      "gap": "{badge/icon-gap}",
+      "primaryAlignment": "center",
+      "counterAlignment": "center"
+    },
+    "size": {
+      "height": "{badge/height/${size}}",
+      "width": "auto"
+    },
+    "cornerRadius": "{badge/radius}",
+    "strokes": [
+      { "variable": "{color/border/default}", "weight": "{border-width/1}", "appliesIf": "${variant === 'outline'}" }
+    ],
+    "fills": [
+      { "type": "solid", "variable": "{color/${tone}/700}",   "appliesIf": "${variant === 'solid' && tone !== 'neutral'}" },
+      { "type": "solid", "variable": "{color/neutral/700}",   "appliesIf": "${variant === 'solid' && tone === 'neutral'}" },
+      { "type": "solid", "variable": "{color/feedback/${tone}/bg}", "appliesIf": "${variant === 'soft' && tone !== 'neutral' && tone !== 'brand'}" },
+      { "type": "solid", "variable": "{color/neutral/100}",   "appliesIf": "${variant === 'soft' && tone === 'neutral'}" },
+      { "type": "solid", "variable": "{color/brand/50}",      "appliesIf": "${variant === 'soft' && tone === 'brand'}" }
+    ],
+    "children": [
+      {
+        "type": "frame",
+        "name": "Status dot",
+        "appliesIf": "${hasDot && variant !== 'dot'}",
+        "size": { "width": 6, "height": 6 },
+        "cornerRadius": 9999,
+        "fills": [{ "type": "solid", "variable": "{color/${tone}/600}" }]
+      },
+      {
+        "type": "icon-slot",
+        "name": "Leading icon",
+        "appliesIf": "${hasIcon}",
+        "size": { "width": 12, "height": 12 }
+      },
+      {
+        "type": "text",
+        "name": "Label",
+        "content": "Label",
+        "fontFamily": "{badge/font-family}",
+        "fontSize": "{badge/font-size/${size}}",
+        "fontWeight": "{badge/font-weight}",
+        "fills": [
+          { "variable": "{color/white}",                  "appliesIf": "${variant === 'solid'}" },
+          { "variable": "{color/feedback/${tone}/fg}",    "appliesIf": "${variant === 'soft' && tone !== 'neutral' && tone !== 'brand'}" },
+          { "variable": "{color/text/primary}",           "appliesIf": "${variant === 'soft' && tone === 'neutral'}" },
+          { "variable": "{color/brand/800}",              "appliesIf": "${variant === 'soft' && tone === 'brand'}" },
+          { "variable": "{color/text/primary}",           "appliesIf": "${variant === 'outline' && tone === 'neutral'}" },
+          { "variable": "{color/${tone}/700}",            "appliesIf": "${variant === 'outline' && tone !== 'neutral'}" }
+        ]
+      }
+    ]
+  },
+
+  "variantOverrides": [
+    {
+      "when": { "variant": "dot" },
+      "structure": {
+        "size": { "width": 8, "height": 8 },
+        "cornerRadius": 9999,
+        "autoLayout": { "padding": { "inline": 0, "block": 0 } },
+        "fills": [{ "type": "solid", "variable": "{color/${tone}/600}" }],
+        "strokes": [],
+        "children": []
+      }
+    }
+  ],
+
+  "documentation": {
+    "anatomy": "[ status-dot? ] [ leading-icon? ] [ label ] — or just a coloured pip in the dot variant.",
+    "do": [
+      "Use soft for inline status (default).",
+      "Use solid for high-emphasis system states.",
+      "Use dot when the label is unnecessary (sidebar avatars, tab indicators)."
+    ],
+    "dont": [
+      "Don't make Badges clickable — switch to Tag.",
+      "Don't use Badges to convey error severity that needs to be announced — pair with text."
+    ],
+    "tokensConsumed": [
+      "badge/radius", "badge/font-family", "badge/font-weight", "badge/icon-gap",
+      "badge/height/{xs|sm|md}", "badge/padding-inline/{xs|sm|md}", "badge/font-size/{xs|sm|md}",
+      "color/{tone}/{50..950}", "color/feedback/{tone}/{bg,fg}", "color/text/primary", "color/border/default", "color/white"
+    ]
+  }
+}

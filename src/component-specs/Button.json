@@ -1,0 +1,143 @@
+{
+  "$schema": "design-system.component.v1",
+  "name": "Button",
+  "description": "A pressable control that triggers an action.",
+  "page": "Components / Button",
+
+  "variantProperties": {
+    "variant": ["primary", "secondary", "tertiary", "destructive", "destructive-secondary", "link"],
+    "size": ["xs", "sm", "md", "lg", "xl"],
+    "state": ["default", "hover", "active", "focus-visible", "disabled", "loading"],
+    "iconOnly": [false, true],
+    "fullWidth": [false, true]
+  },
+
+  "structure": {
+    "type": "frame",
+    "autoLayout": {
+      "direction": "horizontal",
+      "padding": { "inline": "{button/padding-inline/${size}}", "block": 0 },
+      "gap": "{button/icon-gap}",
+      "primaryAlignment": "center",
+      "counterAlignment": "center"
+    },
+    "size": {
+      "height": "{button/height/${size}}",
+      "width": "${iconOnly ? height : (fullWidth ? 'fill' : 'auto')}"
+    },
+    "fills": [{ "type": "solid", "variable": "{button/${variant}/bg}" }],
+    "strokes": [
+      { "variable": "{button/${variant}/border}", "weight": "{button/border-width}", "position": "inside" }
+    ],
+    "cornerRadius": "{button/radius}",
+    "opacity": {
+      "appliesIf": "${state === 'disabled' || state === 'loading'}",
+      "variable": "{button/disabled-opacity}"
+    },
+    "effects": [
+      {
+        "type": "drop-shadow",
+        "appliesIf": "${state === 'focus-visible'}",
+        "variable": "{button/focus-ring}",
+        "note": "focus ring is a composite token; plugin emits a 2px+4px concentric ring at construction time using surface.default + border.focus colours"
+      }
+    ],
+    "children": [
+      {
+        "type": "icon-slot",
+        "name": "Leading icon",
+        "appliesIf": "${state !== 'loading'}",
+        "size": { "width": "1em", "height": "1em" }
+      },
+      {
+        "type": "spinner",
+        "name": "Spinner",
+        "appliesIf": "${state === 'loading'}",
+        "size": { "width": "1em", "height": "1em" },
+        "fills": [{ "type": "stroke", "variable": "{button/${variant}/fg}" }]
+      },
+      {
+        "type": "text",
+        "name": "Label",
+        "content": "Button",
+        "appliesIf": "${!iconOnly}",
+        "fills": [{ "variable": "{button/${variant}/fg}" }],
+        "fontFamily": "{button/font-family}",
+        "fontSize": "{button/font-size/${size}}",
+        "fontWeight": "{button/font-weight}",
+        "letterSpacing": "{button/letter-spacing}"
+      },
+      {
+        "type": "icon-slot",
+        "name": "Trailing icon",
+        "appliesIf": "${!iconOnly && state !== 'loading'}",
+        "size": { "width": "1em", "height": "1em" }
+      }
+    ]
+  },
+
+  "variantOverrides": [
+    {
+      "when": { "variant": "link" },
+      "structure": {
+        "size": { "height": "auto" },
+        "autoLayout": { "padding": { "inline": 0, "block": 0 } },
+        "fills": [],
+        "strokes": [],
+        "children": [
+          {
+            "type": "text",
+            "name": "Label",
+            "textDecoration": "underline",
+            "underlineOffset": "0.2em"
+          }
+        ]
+      }
+    },
+    {
+      "when": { "variant": "link", "state": "hover" },
+      "structure": {
+        "children": [
+          { "type": "text", "name": "Label", "fills": [{ "variable": "{button/link/fg-hover}" }] }
+        ]
+      }
+    },
+    {
+      "when": { "state": "hover" },
+      "structure": {
+        "fills": [{ "type": "solid", "variable": "{button/${variant}/bg-hover}" }]
+      }
+    },
+    {
+      "when": { "state": "active" },
+      "structure": {
+        "fills": [{ "type": "solid", "variable": "{button/${variant}/bg-active}" }]
+      }
+    },
+    {
+      "when": { "state": "disabled" },
+      "structure": {
+        "fills": [{ "type": "solid", "variable": "{button/${variant}/bg-disabled}" }]
+      }
+    }
+  ],
+
+  "documentation": {
+    "anatomy": "[ leading-icon? ] [ label ] [ trailing-icon? ] — or a spinner replaces the leading icon when state=loading. Icon-only mode hides the label and squares the width to height.",
+    "do": [
+      "Use one primary button per primary action surface.",
+      "Use destructive for actions that delete or can't be undone.",
+      "Pair loading with optimistic UI in the parent so the spinner has a finite lifetime."
+    ],
+    "dont": [
+      "Don't use the link variant for actual navigation — use an <a> styled as link.",
+      "Don't use icon-only without aria-label; the build-time lint should catch this.",
+      "Don't override colours inline — change the component token instead."
+    ],
+    "tokensConsumed": [
+      "button/radius", "button/border-width", "button/font-family", "button/font-weight", "button/letter-spacing", "button/icon-gap", "button/disabled-opacity", "button/focus-ring",
+      "button/height/{xs..xl}", "button/padding-inline/{xs..xl}", "button/font-size/{xs..xl}",
+      "button/{primary|secondary|tertiary|destructive|destructive-secondary|link}/{bg,bg-hover,bg-active,bg-disabled,fg,border}"
+    ]
+  }
+}

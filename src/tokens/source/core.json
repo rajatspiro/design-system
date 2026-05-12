@@ -132,11 +132,31 @@
   },
 
   "line-height": {
-    "tight":   { "$value": "1.1",   "$type": "lineHeights" },
-    "snug":    { "$value": "1.25",  "$type": "lineHeights" },
-    "normal":  { "$value": "1.5",   "$type": "lineHeights" },
-    "relaxed": { "$value": "1.625", "$type": "lineHeights" },
-    "loose":   { "$value": "2",     "$type": "lineHeights" }
+    "tight":   {
+      "$value": "1.1",
+      "$type": "lineHeights",
+      "$extensions": { "design-system.figma-value": 110 }
+    },
+    "snug":    {
+      "$value": "1.25",
+      "$type": "lineHeights",
+      "$extensions": { "design-system.figma-value": 125 }
+    },
+    "normal":  {
+      "$value": "1.5",
+      "$type": "lineHeights",
+      "$extensions": { "design-system.figma-value": 150 }
+    },
+    "relaxed": {
+      "$value": "1.625",
+      "$type": "lineHeights",
+      "$extensions": { "design-system.figma-value": 162.5 }
+    },
+    "loose":   {
+      "$value": "2",
+      "$type": "lineHeights",
+      "$extensions": { "design-system.figma-value": 200 }
+    }
   },
 
   "letter-spacing": {

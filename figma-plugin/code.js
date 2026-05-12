@@ -9,13 +9,18 @@
 figma.showUI(__html__, { width: 360, height: 520, themeColors: true });
 
 const COLLECTION_NAME = "Design System";
-const INTER_STYLES = ["Regular", "Medium", "Semi Bold", "Bold"];
 
-/** Pre-load every Inter weight the system uses, so subsequent font assignments
- *  (and Variable-bound fontFamily / fontStyle) don't fail with unloaded-font errors. */
+/** Pre-load every (family, style) combo our STRING variables might set as a
+ *  fontFamily / fontStyle value. Figma's setValueForMode validates that the
+ *  font is loaded before accepting the string, so this needs to run *before*
+ *  Sync tokens or Sync Text Styles. */
+const FONT_FAMILIES = ["Inter", "Menlo", "Georgia"];
+const FONT_STYLES = ["Regular", "Medium", "Semi Bold", "Bold"];
 const fontsReady = Promise.all(
-  INTER_STYLES.map((style) =>
-    figma.loadFontAsync({ family: "Inter", style }).catch(() => {})
+  FONT_FAMILIES.flatMap((family) =>
+    FONT_STYLES.map((style) =>
+      figma.loadFontAsync({ family, style }).catch(() => {})
+    )
   )
 );
 
@@ -208,6 +213,7 @@ function syncTokens(data) {
   // Pass 1 — create every variable and apply LITERAL values.
   // Aliases are deferred to Pass 2 because their targets might not exist yet.
   let processed = 0;
+  let pass1Failures = 0;
   for (const entry of data.variables) {
     const v = ensureVariable(entry.name, entry.type, collection, varIndex);
     if (!v) continue;
@@ -215,12 +221,19 @@ function syncTokens(data) {
       const figmaModeId = modeIds.get(modeId);
       if (!figmaModeId) continue;
       if (val.value !== undefined) {
-        applyValue(v, figmaModeId, val, entry.type, varIndex);
+        try {
+          applyValue(v, figmaModeId, val, entry.type, varIndex);
+        } catch (e) {
+          pass1Failures += 1;
+          if (pass1Failures <= 5) {
+            uiLog("  · couldn't set " + entry.name + " for mode " + modeId + ": " + e.message, "warn");
+          }
+        }
       }
     }
     processed += 1;
   }
-  uiLog("Pass 1 complete: " + processed + " variables created or updated", "ok");
+  uiLog("Pass 1 complete: " + processed + " variables created or updated" + (pass1Failures ? " (" + pass1Failures + " value-set failures)" : ""), pass1Failures ? "warn" : "ok");
 
   // Pass 2 — resolve aliases now that every variable exists.
   let aliasCount = 0;
@@ -577,10 +590,13 @@ async function buildText(spec, ctx, varIndex) {
     }
   }
   if (spec.lineHeight != null) {
-    if (!tryBindRange("lineHeight", spec.lineHeight)) {
-      const n = parseFloat(interpolate(spec.lineHeight, ctx));
-      if (Number.isFinite(n)) text.lineHeight = { value: n * 100, unit: "PERCENT" };
+    // Set the unit to PERCENT first so Figma knows how to interpret the bound
+    // Variable's numeric value (our line-height tokens hold 110, 125, 150…).
+    const lineNum = resolveLiteral(spec.lineHeight, ctx, varIndex);
+    if (lineNum != null) {
+      try { text.lineHeight = { value: lineNum, unit: "PERCENT" }; } catch (e) {}
     }
+    tryBindRange("lineHeight", spec.lineHeight);
   }
 
   // letterSpacing tokens are em-based strings — Figma's letterSpacing wants
@@ -858,9 +874,16 @@ async function syncTextStyles() {
       textStyle.name = styleName;
     }
 
-    // Set literal defaults first so the style has a sensible static state.
+    // Set literal defaults first so the style has a sensible static state and
+    // the lineHeight unit context (PERCENT) is established before binding.
     try { textStyle.fontName = { family, style: styleStr }; } catch (e) {}
     try { textStyle.fontSize = sizePx; } catch (e) {}
+    if (lineVar) {
+      const lineNum = resolveVariableValue(lineVar);
+      if (typeof lineNum === "number") {
+        try { textStyle.lineHeight = { value: lineNum, unit: "PERCENT" }; } catch (e) {}
+      }
+    }
 
     // Bind the underlying Variables. Wrapped individually because not every
     // Figma version exposes every binding; failures degrade gracefully.
@@ -883,6 +906,7 @@ async function syncTextStyles() {
 figma.ui.onmessage = async (msg) => {
   try {
     if (msg.type === "sync-tokens") {
+      await fontsReady;
       syncTokens(msg.data);
     } else if (msg.type === "sync-text-styles") {
       await fontsReady;

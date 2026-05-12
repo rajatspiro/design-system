@@ -5479,16 +5479,16 @@
       "type": "FLOAT",
       "values": {
         "light-compact": {
-          "value": 2
+          "value": 200
         },
         "dark-compact": {
-          "value": 2
+          "value": 200
         },
         "light-comfortable": {
-          "value": 2
+          "value": 200
         },
         "dark-comfortable": {
-          "value": 2
+          "value": 200
         }
       }
     },
@@ -5497,16 +5497,16 @@
       "type": "FLOAT",
       "values": {
         "light-compact": {
-          "value": 1.5
+          "value": 150
         },
         "dark-compact": {
-          "value": 1.5
+          "value": 150
         },
         "light-comfortable": {
-          "value": 1.5
+          "value": 150
         },
         "dark-comfortable": {
-          "value": 1.5
+          "value": 150
         }
       }
     },
@@ -5515,16 +5515,16 @@
       "type": "FLOAT",
       "values": {
         "light-compact": {
-          "value": 1.625
+          "value": 162.5
         },
         "dark-compact": {
-          "value": 1.625
+          "value": 162.5
         },
         "light-comfortable": {
-          "value": 1.625
+          "value": 162.5
         },
         "dark-comfortable": {
-          "value": 1.625
+          "value": 162.5
         }
       }
     },
@@ -5533,16 +5533,16 @@
       "type": "FLOAT",
       "values": {
         "light-compact": {
-          "value": 1.25
+          "value": 125
         },
         "dark-compact": {
-          "value": 1.25
+          "value": 125
         },
         "light-comfortable": {
-          "value": 1.25
+          "value": 125
         },
         "dark-comfortable": {
-          "value": 1.25
+          "value": 125
         }
       }
     },
@@ -5551,16 +5551,16 @@
       "type": "FLOAT",
       "values": {
         "light-compact": {
-          "value": 1.1
+          "value": 110
         },
         "dark-compact": {
-          "value": 1.1
+          "value": 110
         },
         "light-comfortable": {
-          "value": 1.1
+          "value": 110
         },
         "dark-comfortable": {
-          "value": 1.1
+          "value": 110
         }
       }
     },

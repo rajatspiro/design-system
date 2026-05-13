@@ -901,6 +901,485 @@ async function syncTextStyles() {
   figma.ui.postMessage({ type: "sync-text-styles-done" });
 }
 
+/* ============================================================
+   FOUNDATIONS PAGES
+   Builds reference pages (Color / Typography / Spacing / Radius
+   & Shadow / Motion) populated with Variable-bound swatches and
+   Text Style samples. Each page wipes its own root frame on
+   re-runs so the output stays clean. Modes are honoured live —
+   flip the file's Mode and every swatch updates.
+   ============================================================ */
+
+const FOUNDATIONS_PAGES = {
+  COLOR:    "📐 Foundations / Color",
+  TYPO:     "📐 Foundations / Typography",
+  SPACING:  "📐 Foundations / Spacing",
+  RADIUS:   "📐 Foundations / Radius & Shadow",
+  MOTION:   "📐 Foundations / Motion"
+};
+
+function ensurePage(name) {
+  let page = figma.root.children.find((p) => p.name === name);
+  if (!page) {
+    page = figma.createPage();
+    page.name = name;
+  }
+  return page;
+}
+
+/** Remove any previous root frame this generator owns, then create a fresh
+ *  vertical-auto-layout container as the new root. */
+function freshRoot(page, name) {
+  for (const child of page.children.slice()) {
+    if (child.name === name) child.remove();
+  }
+  const root = figma.createFrame();
+  root.name = name;
+  root.layoutMode = "VERTICAL";
+  root.itemSpacing = 32;
+  root.paddingTop = 56; root.paddingBottom = 56;
+  root.paddingLeft = 56; root.paddingRight = 56;
+  root.primaryAxisSizingMode = "AUTO";
+  root.counterAxisSizingMode = "AUTO";
+  root.fills = [];
+  page.appendChild(root);
+  return root;
+}
+
+/** Make a vertical-auto-layout frame with name + gap. */
+function vstack(name, gap) {
+  const f = figma.createFrame();
+  f.name = name;
+  f.layoutMode = "VERTICAL";
+  f.itemSpacing = gap;
+  f.primaryAxisSizingMode = "AUTO";
+  f.counterAxisSizingMode = "AUTO";
+  f.fills = [];
+  return f;
+}
+
+/** Make a horizontal-auto-layout frame with name + gap. */
+function hstack(name, gap) {
+  const f = figma.createFrame();
+  f.name = name;
+  f.layoutMode = "HORIZONTAL";
+  f.itemSpacing = gap;
+  f.primaryAxisSizingMode = "AUTO";
+  f.counterAxisSizingMode = "AUTO";
+  f.fills = [];
+  return f;
+}
+
+/** Create a text node loaded with Inter / the given style. */
+async function makeText(content, opts) {
+  opts = opts || {};
+  const family = opts.family || "Inter";
+  const style = opts.style || "Regular";
+  await figma.loadFontAsync({ family, style }).catch(() => {});
+  const t = figma.createText();
+  t.fontName = { family, style };
+  t.characters = content;
+  if (opts.size) t.fontSize = opts.size;
+  if (opts.color) t.fills = [{ type: "SOLID", color: opts.color }];
+  return t;
+}
+
+const GREY  = { r: 0.42, g: 0.45, b: 0.47 };
+const FAINT = { r: 0.65, g: 0.67, b: 0.69 };
+
+/** A single colour swatch — fill bound to a Variable, name + alias label below. */
+async function colorSwatch(varIndex, varName, label) {
+  const variable = varIndex.get(varName);
+  if (!variable) return null;
+
+  const wrap = vstack(label, 6);
+  wrap.counterAxisSizingMode = "FIXED";
+  wrap.resize(110, wrap.height);
+
+  const tile = figma.createRectangle();
+  tile.resize(110, 70);
+  tile.cornerRadius = 6;
+  tile.strokes = [{ type: "SOLID", color: { r: 0, g: 0, b: 0 }, opacity: 0.08 }];
+  tile.strokeWeight = 1;
+  const paint = { type: "SOLID", color: { r: 0, g: 0, b: 0 } };
+  tile.fills = [figma.variables.setBoundVariableForPaint(paint, "color", variable)];
+  wrap.appendChild(tile);
+
+  const labels = vstack("labels", 2);
+  labels.appendChild(await makeText(label, { size: 10, style: "Medium" }));
+  labels.appendChild(await makeText(varName, { size: 9, color: FAINT }));
+  wrap.appendChild(labels);
+
+  return wrap;
+}
+
+/* ---------- Color page ---------- */
+
+async function buildColorPage(varIndex) {
+  const page = ensurePage(FOUNDATIONS_PAGES.COLOR);
+  const root = freshRoot(page, "Color tokens");
+
+  root.appendChild(await makeText("Color", { style: "Semi Bold", size: 32 }));
+  root.appendChild(await makeText(
+    "Primitives are raw scales (do not consume directly). Semantic tokens describe intent and re-theme via Modes — toggle the file Mode to flip Light ↔ Dark.",
+    { size: 12, color: GREY }
+  ));
+
+  // --- Primitives ---
+  root.appendChild(await makeText("Primitives", { style: "Semi Bold", size: 20 }));
+
+  const SCALE = ["50","100","200","300","400","500","600","700","800","900","950"];
+  for (const family of ["neutral", "brand", "info", "success", "warning", "danger"]) {
+    const familyStack = vstack(family, 8);
+    familyStack.appendChild(await makeText(family, { size: 13, style: "Medium" }));
+    const row = hstack(family + " row", 8);
+    for (const step of SCALE) {
+      const sw = await colorSwatch(varIndex, "color/" + family + "/" + step, family + "/" + step);
+      if (sw) row.appendChild(sw);
+    }
+    familyStack.appendChild(row);
+    root.appendChild(familyStack);
+  }
+
+  // Absolutes
+  const absStack = vstack("absolutes", 8);
+  absStack.appendChild(await makeText("absolutes", { size: 13, style: "Medium" }));
+  const absRow = hstack("abs row", 8);
+  for (const name of ["white", "black"]) {
+    const sw = await colorSwatch(varIndex, "color/" + name, name);
+    if (sw) absRow.appendChild(sw);
+  }
+  absStack.appendChild(absRow);
+  root.appendChild(absStack);
+
+  // --- Semantic groups ---
+  root.appendChild(await makeText("Semantic", { style: "Semi Bold", size: 20 }));
+  root.appendChild(await makeText("These flip per Mode. View under both Light and Dark.", { size: 11, color: GREY }));
+
+  const SEMANTIC_GROUPS = [
+    {
+      title: "Surface",
+      names: ["default","raised","sunken","overlay","inverse","brand","info-subtle","success-subtle","warning-subtle","danger-subtle"],
+      prefix: "color/surface/"
+    },
+    {
+      title: "Text",
+      names: ["primary","secondary","tertiary","muted","disabled","inverse","on-brand","link","link-hover","success","warning","danger","info"],
+      prefix: "color/text/"
+    },
+    {
+      title: "Border",
+      names: ["default","subtle","strong","focus","disabled","error","success","warning","info"],
+      prefix: "color/border/"
+    }
+  ];
+  for (const group of SEMANTIC_GROUPS) {
+    const stack = vstack(group.title, 8);
+    stack.appendChild(await makeText(group.title, { size: 13, style: "Medium" }));
+    const row = hstack(group.title + " row", 8);
+    row.layoutWrap = "WRAP";
+    row.counterAxisSizingMode = "FIXED";
+    row.resize(1200, row.height);
+    for (const n of group.names) {
+      const sw = await colorSwatch(varIndex, group.prefix + n, n);
+      if (sw) row.appendChild(sw);
+    }
+    stack.appendChild(row);
+    root.appendChild(stack);
+  }
+
+  // Action × {primary/secondary/tertiary/destructive} × {bg/bg-hover/bg-active/bg-disabled/fg}
+  const ACTION_ROLES = ["primary", "secondary", "tertiary", "destructive"];
+  const ACTION_SLOTS = ["bg", "bg-hover", "bg-active", "bg-disabled", "fg"];
+  const actionStack = vstack("action", 12);
+  actionStack.appendChild(await makeText("Action", { size: 13, style: "Medium" }));
+  for (const role of ACTION_ROLES) {
+    const roleRow = vstack(role, 6);
+    roleRow.appendChild(await makeText(role, { size: 11, color: GREY }));
+    const row = hstack(role + " row", 8);
+    for (const slot of ACTION_SLOTS) {
+      const sw = await colorSwatch(varIndex, "color/action/" + role + "/" + slot, slot);
+      if (sw) row.appendChild(sw);
+    }
+    roleRow.appendChild(row);
+    actionStack.appendChild(roleRow);
+  }
+  root.appendChild(actionStack);
+
+  // Feedback × {info/success/warning/danger} × {bg/border/fg/icon}
+  const FEEDBACK_TONES = ["info", "success", "warning", "danger"];
+  const FEEDBACK_SLOTS = ["bg", "border", "fg", "icon"];
+  const fbStack = vstack("feedback", 12);
+  fbStack.appendChild(await makeText("Feedback", { size: 13, style: "Medium" }));
+  for (const tone of FEEDBACK_TONES) {
+    const row = vstack(tone, 6);
+    row.appendChild(await makeText(tone, { size: 11, color: GREY }));
+    const inner = hstack(tone + " row", 8);
+    for (const slot of FEEDBACK_SLOTS) {
+      const sw = await colorSwatch(varIndex, "color/feedback/" + tone + "/" + slot, slot);
+      if (sw) inner.appendChild(sw);
+    }
+    row.appendChild(inner);
+    fbStack.appendChild(row);
+  }
+  root.appendChild(fbStack);
+
+  uiLog("  · Color page built", "muted");
+}
+
+/* ---------- Typography page ---------- */
+
+async function buildTypographyPage(varIndex) {
+  const page = ensurePage(FOUNDATIONS_PAGES.TYPO);
+  const root = freshRoot(page, "Typography tokens");
+
+  root.appendChild(await makeText("Typography", { style: "Semi Bold", size: 32 }));
+  root.appendChild(await makeText(
+    "Each role is a Text Style with fontFamily, fontStyle, fontSize, and lineHeight bound to Variables. Apply via Styles panel.",
+    { size: 12, color: GREY }
+  ));
+
+  const styles = figma.getLocalTextStyles();
+
+  for (const role of TYPOGRAPHY_ROLES) {
+    const roleStyleName = "Typography/" + roleDisplayName(role);
+    const textStyle = styles.find((s) => s.name === roleStyleName);
+
+    const sampleText = role.startsWith("display") ? "The quick brown fox"
+      : role.startsWith("heading") ? "Section heading"
+      : role === "overline" ? "OVERLINE LABEL"
+      : role === "code" ? "const tokens = await fetch(…);"
+      : role === "caption" ? "Helper or caption text"
+      : role.startsWith("label") ? "Label text"
+      : "The quick brown fox jumps over the lazy dog.";
+
+    const row = hstack(role, 24);
+    row.counterAxisAlignItems = "CENTER";
+
+    // Left: role name + style ref
+    const meta = vstack(role + " meta", 4);
+    meta.counterAxisSizingMode = "FIXED";
+    meta.resize(160, meta.height);
+    meta.appendChild(await makeText(roleDisplayName(role), { style: "Medium", size: 12 }));
+    meta.appendChild(await makeText("text/" + role, { size: 10, color: FAINT }));
+    row.appendChild(meta);
+
+    // Right: sample text (with text style applied if available)
+    const sample = await makeText(sampleText, { style: "Regular", size: 14 });
+    if (textStyle) {
+      try { sample.textStyleId = textStyle.id; } catch (e) { /* fallback to default */ }
+    }
+    row.appendChild(sample);
+
+    root.appendChild(row);
+  }
+
+  uiLog("  · Typography page built", "muted");
+}
+
+/* ---------- Spacing page ---------- */
+
+async function buildSpacingPage(varIndex) {
+  const page = ensurePage(FOUNDATIONS_PAGES.SPACING);
+  const root = freshRoot(page, "Spacing tokens");
+
+  root.appendChild(await makeText("Spacing", { style: "Semi Bold", size: 32 }));
+  root.appendChild(await makeText(
+    "4px base scale. Use as padding (inset), gap between stacked items (stack), or gap between inline items (inline).",
+    { size: 12, color: GREY }
+  ));
+
+  const STEPS = ["0", "1", "2", "3", "4", "5", "6", "8", "10", "12", "16", "20", "24", "32"];
+
+  root.appendChild(await makeText("Primitives", { style: "Semi Bold", size: 20 }));
+
+  const brandVar = varIndex.get("color/brand/700");
+  for (const step of STEPS) {
+    const variable = varIndex.get("space/" + step);
+    if (!variable) continue;
+    const literal = resolveVariableValue(variable);
+    if (typeof literal !== "number") continue;
+
+    const row = hstack("space-" + step, 16);
+    row.counterAxisAlignItems = "CENTER";
+
+    const name = await makeText("space/" + step, { size: 11, style: "Medium" });
+    const nameWrap = figma.createFrame();
+    nameWrap.layoutMode = "HORIZONTAL"; nameWrap.fills = [];
+    nameWrap.primaryAxisSizingMode = "FIXED"; nameWrap.counterAxisSizingMode = "AUTO";
+    nameWrap.resize(120, 16);
+    nameWrap.appendChild(name);
+    row.appendChild(nameWrap);
+
+    const bar = figma.createRectangle();
+    bar.resize(Math.max(literal, 1), 16);
+    const fill = { type: "SOLID", color: { r: 0, g: 0, b: 0 } };
+    bar.fills = brandVar
+      ? [figma.variables.setBoundVariableForPaint(fill, "color", brandVar)]
+      : [{ type: "SOLID", color: { r: 0.235, g: 0.380, b: 0.867 } }];
+    row.appendChild(bar);
+
+    row.appendChild(await makeText(literal + "px", { size: 11, color: GREY }));
+
+    root.appendChild(row);
+  }
+
+  uiLog("  · Spacing page built", "muted");
+}
+
+/* ---------- Radius & Shadow page ---------- */
+
+async function buildRadiusShadowPage(varIndex) {
+  const page = ensurePage(FOUNDATIONS_PAGES.RADIUS);
+  const root = freshRoot(page, "Radius & Shadow tokens");
+
+  root.appendChild(await makeText("Radius & Shadow", { style: "Semi Bold", size: 32 }));
+
+  // Radius
+  root.appendChild(await makeText("Radius", { style: "Semi Bold", size: 20 }));
+  const RADII = ["none", "xs", "sm", "md", "lg", "xl", "2xl", "full"];
+  const radiusRow = hstack("radius row", 16);
+  const surfaceVar = varIndex.get("color/brand/100");
+  for (const r of RADII) {
+    const variable = varIndex.get("radius/" + r);
+    if (!variable) continue;
+    const literal = resolveVariableValue(variable);
+    const tile = vstack(r, 6);
+    tile.counterAxisSizingMode = "FIXED"; tile.resize(96, tile.height);
+
+    const sq = figma.createRectangle();
+    sq.resize(96, 96);
+    sq.cornerRadius = typeof literal === "number" ? literal : 0;
+    const fill = { type: "SOLID", color: { r: 0.93, g: 0.95, b: 1 } };
+    sq.fills = surfaceVar
+      ? [figma.variables.setBoundVariableForPaint(fill, "color", surfaceVar)]
+      : [fill];
+    sq.strokes = [{ type: "SOLID", color: { r: 0, g: 0, b: 0 }, opacity: 0.1 }];
+    sq.strokeWeight = 1;
+    tile.appendChild(sq);
+
+    tile.appendChild(await makeText(r, { size: 11, style: "Medium" }));
+    tile.appendChild(await makeText((literal != null ? literal + "px" : "—"), { size: 10, color: FAINT }));
+    radiusRow.appendChild(tile);
+  }
+  root.appendChild(radiusRow);
+
+  // Shadow (Variables don't store shadows — use raw values from the CSS layer
+  // for visual reference. Update if the shadow scale changes.)
+  root.appendChild(await makeText("Shadow / Elevation", { style: "Semi Bold", size: 20 }));
+  const SHADOWS = [
+    { name: "shadow/1 · elevation/e1", effects: [{ type: "DROP_SHADOW", color: { r: 0.067, g: 0.094, b: 0.110, a: 0.04 }, offset: { x: 0, y: 1 }, radius: 2, spread: 0, visible: true, blendMode: "NORMAL" },
+                                                  { type: "DROP_SHADOW", color: { r: 0.067, g: 0.094, b: 0.110, a: 0.04 }, offset: { x: 0, y: 1 }, radius: 1, spread: 0, visible: true, blendMode: "NORMAL" }] },
+    { name: "shadow/2 · elevation/e2", effects: [{ type: "DROP_SHADOW", color: { r: 0.067, g: 0.094, b: 0.110, a: 0.06 }, offset: { x: 0, y: 2 }, radius: 4, spread: 0, visible: true, blendMode: "NORMAL" },
+                                                  { type: "DROP_SHADOW", color: { r: 0.067, g: 0.094, b: 0.110, a: 0.04 }, offset: { x: 0, y: 1 }, radius: 2, spread: 0, visible: true, blendMode: "NORMAL" }] },
+    { name: "shadow/3 · elevation/e3", effects: [{ type: "DROP_SHADOW", color: { r: 0.067, g: 0.094, b: 0.110, a: 0.08 }, offset: { x: 0, y: 4 }, radius: 8, spread: 0, visible: true, blendMode: "NORMAL" },
+                                                  { type: "DROP_SHADOW", color: { r: 0.067, g: 0.094, b: 0.110, a: 0.04 }, offset: { x: 0, y: 2 }, radius: 4, spread: 0, visible: true, blendMode: "NORMAL" }] },
+    { name: "shadow/4 · elevation/e4", effects: [{ type: "DROP_SHADOW", color: { r: 0.067, g: 0.094, b: 0.110, a: 0.10 }, offset: { x: 0, y: 8 }, radius: 16, spread: 0, visible: true, blendMode: "NORMAL" },
+                                                  { type: "DROP_SHADOW", color: { r: 0.067, g: 0.094, b: 0.110, a: 0.06 }, offset: { x: 0, y: 4 }, radius: 8, spread: 0, visible: true, blendMode: "NORMAL" }] },
+    { name: "shadow/5 · elevation/e5", effects: [{ type: "DROP_SHADOW", color: { r: 0.067, g: 0.094, b: 0.110, a: 0.14 }, offset: { x: 0, y: 16 }, radius: 32, spread: 0, visible: true, blendMode: "NORMAL" },
+                                                  { type: "DROP_SHADOW", color: { r: 0.067, g: 0.094, b: 0.110, a: 0.08 }, offset: { x: 0, y: 8 }, radius: 16, spread: 0, visible: true, blendMode: "NORMAL" }] }
+  ];
+  const shadowRow = hstack("shadow row", 24);
+  for (const s of SHADOWS) {
+    const tile = vstack(s.name, 8);
+    tile.counterAxisSizingMode = "FIXED"; tile.resize(140, tile.height);
+    tile.paddingTop = 16; tile.paddingBottom = 16; tile.paddingLeft = 16; tile.paddingRight = 16;
+
+    const card = figma.createRectangle();
+    card.resize(120, 80);
+    card.cornerRadius = 8;
+    card.fills = [{ type: "SOLID", color: { r: 1, g: 1, b: 1 } }];
+    card.effects = s.effects;
+    tile.appendChild(card);
+
+    tile.appendChild(await makeText(s.name, { size: 10, color: FAINT }));
+    shadowRow.appendChild(tile);
+  }
+  root.appendChild(shadowRow);
+
+  uiLog("  · Radius & Shadow page built", "muted");
+}
+
+/* ---------- Motion page ---------- */
+
+async function buildMotionPage(varIndex) {
+  const page = ensurePage(FOUNDATIONS_PAGES.MOTION);
+  const root = freshRoot(page, "Motion tokens");
+
+  root.appendChild(await makeText("Motion", { style: "Semi Bold", size: 32 }));
+  root.appendChild(await makeText(
+    "Durations and easings used across transitions. Figma can't animate these statically — values listed below for engineering reference.",
+    { size: 12, color: GREY }
+  ));
+
+  // Durations
+  root.appendChild(await makeText("Durations", { style: "Semi Bold", size: 20 }));
+  const DURATIONS = [
+    ["instant", "0ms",   "Imperceptible — used to disable motion when prefers-reduced-motion is set."],
+    ["fast",    "100ms", "Micro-interactions: hovers, button feedback."],
+    ["base",    "200ms", "Default — most UI transitions (default → hover, mode flips)."],
+    ["slow",    "300ms", "Larger surfaces: modals, drawers entering."],
+    ["slower",  "500ms", "Page-level transitions, large reveals."]
+  ];
+  for (const [name, val, desc] of DURATIONS) {
+    const row = hstack(name, 16);
+    row.counterAxisAlignItems = "CENTER";
+    const left = vstack(name + " meta", 2);
+    left.counterAxisSizingMode = "FIXED"; left.resize(220, left.height);
+    left.appendChild(await makeText("duration/" + name, { size: 12, style: "Medium" }));
+    left.appendChild(await makeText(val, { size: 11, color: FAINT }));
+    row.appendChild(left);
+    row.appendChild(await makeText(desc, { size: 12, color: GREY }));
+    root.appendChild(row);
+  }
+
+  // Easings
+  root.appendChild(await makeText("Easings", { style: "Semi Bold", size: 20 }));
+  const EASINGS = [
+    ["linear",   "linear",                            "Constant rate. Use only for progress / load indicators."],
+    ["in",       "cubic-bezier(0.4, 0, 1, 1)",        "Accelerates. Use for things leaving the screen."],
+    ["out",      "cubic-bezier(0, 0, 0.2, 1)",        "Decelerates. Use for things entering the screen."],
+    ["in-out",   "cubic-bezier(0.4, 0, 0.2, 1)",      "Default — most state transitions."],
+    ["spring",   "cubic-bezier(0.5, 1.5, 0.5, 1)",    "Slight overshoot. Use sparingly for delight."]
+  ];
+  for (const [name, val, desc] of EASINGS) {
+    const row = hstack(name, 16);
+    row.counterAxisAlignItems = "CENTER";
+    const left = vstack(name + " meta", 2);
+    left.counterAxisSizingMode = "FIXED"; left.resize(220, left.height);
+    left.appendChild(await makeText("ease/" + name, { size: 12, style: "Medium" }));
+    left.appendChild(await makeText(val, { size: 10, color: FAINT, family: "Inter" }));
+    row.appendChild(left);
+    row.appendChild(await makeText(desc, { size: 12, color: GREY }));
+    root.appendChild(row);
+  }
+
+  uiLog("  · Motion page built", "muted");
+}
+
+/* ---------- entry point ---------- */
+
+async function generateFoundations() {
+  const collection = figma.variables.getLocalVariableCollections().find((c) => c.name === COLLECTION_NAME);
+  if (!collection) {
+    uiLog("Run 'Sync tokens' first — no '" + COLLECTION_NAME + "' collection found", "err");
+    figma.ui.postMessage({ type: "foundations-done" });
+    return;
+  }
+  const varIndex = indexVariables(collection);
+
+  uiLog("Building Foundations pages…", "info");
+
+  await buildColorPage(varIndex);
+  await buildTypographyPage(varIndex);
+  await buildSpacingPage(varIndex);
+  await buildRadiusShadowPage(varIndex);
+  await buildMotionPage(varIndex);
+
+  uiLog("Foundations done.", "ok");
+  figma.ui.postMessage({ type: "foundations-done" });
+}
+
 /* ---------- message router ---------- */
 
 figma.ui.onmessage = async (msg) => {
@@ -914,6 +1393,9 @@ figma.ui.onmessage = async (msg) => {
     } else if (msg.type === "generate-components") {
       await fontsReady;
       await generateComponents(msg.specs);
+    } else if (msg.type === "generate-foundations") {
+      await fontsReady;
+      await generateFoundations();
     } else {
       uiLog("Unknown message: " + msg.type, "warn");
     }

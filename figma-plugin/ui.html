@@ -114,6 +114,7 @@
   <div class="actions">
     <button id="sync-tokens">Sync tokens from GitHub</button>
     <button id="sync-text-styles" class="secondary">Sync Text Styles</button>
+    <button id="generate-foundations" class="secondary">Generate Foundations pages</button>
     <button id="generate-components" class="secondary">Generate components</button>
   </div>
 
@@ -158,6 +159,7 @@
   function setBusy(busy) {
     document.getElementById('sync-tokens').disabled = busy;
     document.getElementById('sync-text-styles').disabled = busy;
+    document.getElementById('generate-foundations').disabled = busy;
     document.getElementById('generate-components').disabled = busy;
   }
 
@@ -180,6 +182,12 @@
     setBusy(true);
     log('Syncing Text Styles…', 'muted');
     parent.postMessage({ pluginMessage: { type: 'sync-text-styles' } }, '*');
+  });
+
+  document.getElementById('generate-foundations').addEventListener('click', () => {
+    setBusy(true);
+    log('Generating Foundations pages…', 'muted');
+    parent.postMessage({ pluginMessage: { type: 'generate-foundations' } }, '*');
   });
 
   document.getElementById('generate-components').addEventListener('click', async () => {
@@ -209,6 +217,7 @@
     if (msg.type === 'log') log(msg.text, msg.kind || 'info');
     if (msg.type === 'sync-done') setBusy(false);
     if (msg.type === 'sync-text-styles-done') setBusy(false);
+    if (msg.type === 'foundations-done') setBusy(false);
     if (msg.type === 'generate-done') setBusy(false);
   };
 </script>
